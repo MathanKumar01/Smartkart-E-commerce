@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SmartCart Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d14;
+    --indigo: #4338f7;
+    --indigo-light: #6d63ff;
+    --indigo-dim: rgba(67,56,247,0.08);
+    --surface: #ffffff;
+    --bg: #f5f5f8;
+    --muted: #8a8a99;
+    --border: #e8e8ef;
+    --green: #00b07a;
+    --green-soft: rgba(0,176,122,0.1);
+    --green-border: rgba(0,176,122,0.2);
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 60% at 10% 20%, rgba(67,56,247,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 70% at 90% 80%, rgba(67,56,247,0.03) 0%, transparent 60%);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bob {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-6px); }
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px; height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: slideDown 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+
+  .brand-icon {
+    width: 34px; height: 34px;
+    background: var(--indigo);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: #fff;
+    box-shadow: 0 4px 12px rgba(67,56,247,0.3);
+  }
+
+  .brand-name {
+    font-size: 18px; font-weight: 800;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  .brand-name span { color: var(--indigo); }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--indigo-dim);
+    border: 1px solid rgba(67,56,247,0.15);
+    border-radius: 100px;
+    padding: 6px 14px 6px 6px;
+    font-size: 13px; font-weight: 500; color: var(--ink);
+  }
+
+  .avatar {
+    width: 28px; height: 28px;
+    background: var(--indigo);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }
+
+  .btn-logout {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover {
+    border-color: var(--indigo);
+    color: var(--indigo);
+    background: var(--indigo-dim);
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1100px; margin: 0 auto;
+    padding: 52px 40px 80px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── WELCOME ── */
+  .welcome-section {
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  }
+
+  .welcome-eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--indigo); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .welcome-eyebrow::before {
+    content: '✓';
+    width: 18px; height: 18px;
+    background: var(--indigo-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--indigo);
+  }
+
+  .welcome-title {
+    font-size: 40px; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ink);
+  }
+  .welcome-title em {
+    font-style: normal; color: var(--indigo);
+  }
+
+  .welcome-sub {
+    margin-top: 12px;
+    font-size: 15px; font-weight: 400;
+    color: var(--muted); line-height: 1.7;
+    max-width: 520px;
+  }
+
+  /* ── STATS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 16px rgba(13,13,20,0.06);
+    animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    position: relative; overflow: hidden;
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .stat-card:hover {
+    box-shadow: 0 8px 32px rgba(13,13,20,0.1);
+    transform: translateY(-2px);
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.18s; }
+  .stat-card:nth-child(2) { animation-delay: 0.25s; }
+  .stat-card:nth-child(3) { animation-delay: 0.32s; }
+
+  .stat-top {
+    height: 3px; margin: -28px -28px 24px;
+    background: linear-gradient(90deg, var(--indigo), var(--indigo-light));
+    border-radius: 16px 16px 0 0;
+  }
+
+  .stat-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 38px; font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink); line-height: 1;
+  }
+
+  .stat-change {
+    margin-top: 10px;
+    font-size: 12px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .stat-change.up {
+    background: var(--green-soft); color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .stat-change.neutral {
+    background: var(--indigo-dim); color: var(--indigo);
+    border: 1px solid rgba(67,56,247,0.15);
+  }
+
+  /* ── ACTION GRID ── */
+  .action-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+  }
+
+  .action-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 2px 16px rgba(13,13,20,0.06);
+    animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    transition: box-shadow 0.25s;
+  }
+  .action-card:hover { box-shadow: 0 8px 32px rgba(13,13,20,0.1); }
+  .action-card:nth-child(1) { animation-delay: 0.38s; }
+  .action-card:nth-child(2) { animation-delay: 0.44s; }
+
+  .card-title {
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink); margin-bottom: 8px;
+  }
+
+  .card-desc {
+    font-size: 13px; font-weight: 400;
+    color: var(--muted); line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .btn-store {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 28px;
+    background: var(--indigo);
+    border-radius: 10px; border: none;
+    font-family: inherit;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #fff; text-decoration: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
+  }
+  .btn-store:hover {
+    background: var(--indigo-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(67,56,247,0.35);
+    color: #fff;
+  }
+  .btn-store .arrow { transition: transform 0.2s; display: inline-block; }
+  .btn-store:hover .arrow { transform: translateX(4px); }
+
+  /* Store visual */
+  .store-visual {
+    margin-top: 28px; height: 88px;
+    background: var(--indigo-dim);
+    border: 1px solid rgba(67,56,247,0.1);
+    border-radius: 12px;
+    display: flex; align-items: center;
+    justify-content: center; gap: 12px;
+  }
+
+  .store-dot {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 2px 8px rgba(13,13,20,0.06);
+    animation: bob 3s ease-in-out infinite alternate;
+  }
+  .store-dot:nth-child(2) { animation-delay: -1s; }
+  .store-dot:nth-child(3) { animation-delay: -2s; }
+  .store-dot:nth-child(4) { animation-delay: -0.5s; }
+  .store-dot:nth-child(5) { animation-delay: -1.5s; }
+
+  /* Quick links */
+  .quick-links { display: flex; flex-direction: column; gap: 8px; }
+
+  .quick-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none; color: var(--ink);
+    font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .quick-link:hover {
+    background: var(--indigo-dim);
+    border-color: rgba(67,56,247,0.2);
+    color: var(--indigo);
+    transform: translateX(4px);
+  }
+  .quick-link-icon { font-size: 15px; margin-right: 6px; }
+  .quick-link-arrow {
+    color: var(--muted); font-size: 16px;
+    transition: transform 0.2s, color 0.2s;
+  }
+  .quick-link:hover .quick-link-arrow {
+    transform: translateX(2px); color: var(--indigo);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 32px;
+    font-size: 12px; color: var(--muted);
+    opacity: 0.6; position: relative; z-index: 1;
+    animation: fadeUp 0.7s 0.6s both;
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="brand" href="/">
+      <div class="brand-icon">S</div>
+      <span class="brand-name">Smart<span>Cart</span></span>
+    </a>
+    <div class="nav-right">
+      <div class="user-pill">
+        <div class="avatar">{{ user.username|first|upper }}</div>
+        {{ user.username }}
+      </div>
+      <a href="/users/logout/" class="btn-logout">Sign out</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- WELCOME -->
+    <section class="welcome-section">
+      <p class="welcome-eyebrow">Authenticated</p>
+      <h1 class="welcome-title">Good to see you, <em>{{ user.username }}</em></h1>
+      <p class="welcome-sub">Your SmartCart dashboard is ready. Browse the store, track your orders, and manage your account below.</p>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top"></div>
+        <div class="stat-label">Active Orders</div>
+        <div class="stat-value">3</div>
+        <span class="stat-change up">↑ 2 this week</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"></div>
+        <div class="stat-label">Items in Cart</div>
+        <div class="stat-value">7</div>
+        <span class="stat-change neutral">Ready to checkout</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"></div>
+        <div class="stat-label">Total Saved</div>
+        <div class="stat-value">₹840</div>
+        <span class="stat-change up">↑ With discounts</span>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-grid">
+
+      <div class="action-card">
+        <h2 class="card-title">Explore the Store</h2>
+        <p class="card-desc">Browse thousands of products across all categories. New arrivals and exclusive deals updated daily.</p>
+        <a href="/" class="btn-store">
+          Go to Store <span class="arrow">→</span>
+        </a>
+        <div class="store-visual">
+          <div class="store-dot">🧴</div>
+          <div class="store-dot">📦</div>
+          <div class="store-dot">🛍️</div>
+          <div class="store-dot">🎁</div>
+          <div class="store-dot">⚡</div>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <h2 class="card-title">Quick Links</h2>
+        <p class="card-desc">Jump right in.</p>
+        <div class="quick-links">
+          <a href="#" class="quick-link">
+            <span><span class="quick-link-icon">📋</span>My Orders</span>
+            <span class="quick-link-arrow">›</span>
+          </a>
+          <a href="/wishlist/" class="quick-link">
+            <span><span class="quick-link-icon">❤️</span>Wishlist</span>
+            <span class="quick-link-arrow">›</span>
+          </a>
+          <a href="#" class="quick-link">
+            <span><span class="quick-link-icon">👤</span>My Profile</span>
+            <span class="quick-link-arrow">›</span>
+          </a>
+          <a href="#" class="quick-link">
+            <span><span class="quick-link-icon">🎟️</span>Coupons</span>
+            <span class="quick-link-arrow">›</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>© 2026 SmartCart · All rights reserved</footer>
+
+</body>
+</html>

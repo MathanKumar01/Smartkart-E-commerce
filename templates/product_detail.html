@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{{ product.name }} — SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d14;
+    --indigo: #4338f7;
+    --indigo-light: #6d63ff;
+    --indigo-dim: rgba(67,56,247,0.08);
+    --surface: #ffffff;
+    --bg: #f5f5f8;
+    --muted: #8a8a99;
+    --border: #e8e8ef;
+    --green: #00b07a;
+  }
+
+  html { font-size: 16px; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(16px, 4vw, 48px);
+    height: 68px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px;
+    color: var(--ink); text-decoration: none;
+    letter-spacing: -0.03em; white-space: nowrap;
+  }
+  .brand span { color: var(--indigo); }
+
+  .search-wrap {
+    flex: 1; max-width: 520px;
+    display: flex; align-items: center;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0 6px 0 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-wrap:focus-within {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(67,56,247,0.1);
+  }
+  .search-wrap input {
+    flex: 1; border: none; background: transparent; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--ink); padding: 10px 0;
+  }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-wrap button {
+    background: var(--indigo); color: #fff;
+    border: none; border-radius: 7px;
+    padding: 7px 16px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .search-wrap button:hover { background: var(--indigo-light); }
+
+  .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .nav-greeting { font-size: 13px; color: var(--muted); padding: 0 8px; }
+  .nav-greeting strong { color: var(--ink); font-weight: 500; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; padding: 8px 14px;
+    border-radius: 8px; text-decoration: none;
+    color: var(--ink); transition: background 0.18s, color 0.18s;
+  }
+  .nav-link:hover { background: var(--indigo-dim); color: var(--indigo); }
+  .nav-link.accent { background: var(--indigo); color: #fff; }
+  .nav-link.accent:hover { background: var(--indigo-light); color: #fff; }
+  .cart-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; padding: 8px 16px;
+    border-radius: 8px; text-decoration: none; color: var(--ink);
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .cart-link:hover { border-color: var(--indigo); background: var(--indigo-dim); color: var(--indigo); }
+
+  /* ── BREADCRUMB ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 48px) 80px; }
+
+  .breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 36px;
+    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .breadcrumb a {
+    color: var(--muted); text-decoration: none;
+    transition: color 0.18s;
+  }
+  .breadcrumb a:hover { color: var(--indigo); }
+  .breadcrumb-sep { opacity: 0.4; }
+  .breadcrumb-current { color: var(--ink); font-weight: 500; }
+
+  /* ── PRODUCT LAYOUT ── */
+  .product-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .product-layout { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ── IMAGE PANEL ── */
+  .img-panel {
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.05s both;
+  }
+
+  .img-main {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    aspect-ratio: 4 / 3.5;
+    position: relative;
+  }
+  .img-main img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .img-main:hover img { transform: scale(1.04); }
+
+  .img-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: var(--indigo); color: #fff;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+  }
+
+  /* ── INFO PANEL ── */
+  .info-panel {
+    display: flex; flex-direction: column; gap: 24px;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.12s both;
+  }
+
+  .product-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: clamp(26px, 4vw, 36px);
+    letter-spacing: -0.03em; line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .product-desc {
+    font-size: 15px; font-weight: 300; color: #555;
+    line-height: 1.7; border-left: 3px solid var(--border);
+    padding-left: 16px;
+  }
+
+  /* Price block */
+  .price-block {
+    display: flex; align-items: baseline; gap: 6px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .price-sym {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 600; color: var(--muted);
+  }
+  .price-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px; font-weight: 800;
+    letter-spacing: -0.04em; color: var(--ink);
+    line-height: 1;
+  }
+  .price-tag {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--green);
+    background: rgba(0,176,122,0.1);
+    padding: 4px 10px; border-radius: 6px;
+  }
+
+  /* Meta pills */
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .meta-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--muted);
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 8px;
+  }
+  .meta-pill span:first-child { font-size: 14px; }
+
+  /* CTA */
+  .cta-group { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn-add-cart {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--indigo); color: #fff;
+    border: none; border-radius: 13px;
+    padding: 17px 28px; font-size: 15px; font-weight: 600;
+    font-family: 'Syne', sans-serif; letter-spacing: -0.01em;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
+  }
+  .btn-add-cart:hover {
+    background: var(--indigo-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(67,56,247,0.35);
+    color: #fff;
+  }
+  .btn-add-cart:active { transform: translateY(0); }
+
+  .btn-back {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 13px; padding: 14px 28px;
+    font-size: 14px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    transition: border-color 0.18s, color 0.18s, background 0.18s;
+  }
+  .btn-back:hover {
+    border-color: var(--indigo); color: var(--indigo);
+    background: var(--indigo-dim);
+  }
+
+  /* Trust row */
+  .trust-row {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding-top: 4px;
+  }
+  .trust-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .trust-item span:first-child { font-size: 15px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="brand" href="/">Smart<span>Cart</span></a>
+
+  <form method="GET" action="/" class="search-wrap">
+    <input type="search" name="q" placeholder="Search for products, brands…">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="nav-actions">
+    {% if user.is_authenticated %}
+      <span class="nav-greeting">Hello, <strong>{{ user.username }}</strong></span>
+      <a class="nav-link" href="/users/logout/">Logout</a>
+    {% else %}
+      <a class="nav-link accent" href="/users/login/">Login</a>
+    {% endif %}
+    <a class="cart-link" href="/cart/"><span>🛒</span> Cart</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Products</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">{{ product.name }}</span>
+  </nav>
+
+  <!-- Two-column layout -->
+  <div class="product-layout">
+
+    <!-- LEFT: Image -->
+    <div class="img-panel">
+      <div class="img-main">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        <span class="img-badge">New Arrival</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="info-panel">
+
+      <h1 class="product-title">{{ product.name }}</h1>
+
+      <p class="product-desc">{{ product.description }}</p>
+
+      <!-- Price -->
+      <div class="price-block">
+        <span class="price-sym">₹</span>
+        <span class="price-value">{{ product.price }}</span>
+        <span class="price-tag">In Stock</span>
+      </div>
+
+      <!-- Meta pills -->
+      <div class="meta-row">
+        <span class="meta-pill"><span>🚚</span> Free Delivery</span>
+        <span class="meta-pill"><span>↩️</span> 7-day Returns</span>
+        <span class="meta-pill"><span>✅</span> Genuine Product</span>
+      </div>
+
+      <!-- CTAs -->
+      <div class="cta-group">
+        <a href="/cart/add/{{ product.id }}/" class="btn-add-cart">
+          🛒 &nbsp;Add to Cart
+        </a>
+        <a href="/" class="btn-back">
+          ← Back to Products
+        </a>
+      </div>
+
+      <!-- Trust -->
+      <div class="trust-row">
+        <span class="trust-item"><span>🔒</span> Secure Checkout</span>
+        <span class="trust-item"><span>⚡</span> Fast Dispatch</span>
+        <span class="trust-item"><span>💬</span> 24/7 Support</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

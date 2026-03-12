@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Orders — SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d14;
+    --indigo: #4338f7;
+    --indigo-light: #6d63ff;
+    --indigo-dim: rgba(67,56,247,0.08);
+    --surface: #ffffff;
+    --bg: #f5f5f8;
+    --muted: #8a8a99;
+    --border: #e8e8ef;
+    --green: #00b07a;
+    --green-dim: rgba(0,176,122,0.1);
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(16px, 4vw, 48px);
+    height: 68px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px;
+    color: var(--ink); text-decoration: none;
+    letter-spacing: -0.03em;
+  }
+  .brand span { color: var(--indigo); }
+  .navbar-right { margin-left: auto; display: flex; gap: 8px; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; padding: 8px 14px;
+    border-radius: 8px; text-decoration: none;
+    color: var(--muted); transition: background 0.18s, color 0.18s;
+  }
+  .nav-link:hover { background: var(--indigo-dim); color: var(--indigo); }
+
+  /* ── PAGE ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px clamp(16px, 4vw, 48px) 80px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 32px; letter-spacing: -0.03em;
+  }
+  .page-subtitle { font-size: 14px; color: var(--muted); margin-top: 5px; }
+
+  .orders-badge {
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 13px;
+    padding: 6px 14px; border-radius: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TABLE CARD ── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.08s both;
+    box-shadow: 0 2px 16px rgba(13,13,20,0.04);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  /* Head */
+  thead tr {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  thead th {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 24px;
+    text-align: left;
+  }
+  thead th:last-child { text-align: right; }
+
+  /* Body rows */
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.18s;
+    animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(67,56,247,0.025); }
+
+  tbody tr:nth-child(1) { animation-delay: 0.12s; }
+  tbody tr:nth-child(2) { animation-delay: 0.17s; }
+  tbody tr:nth-child(3) { animation-delay: 0.22s; }
+  tbody tr:nth-child(4) { animation-delay: 0.27s; }
+  tbody tr:nth-child(5) { animation-delay: 0.32s; }
+  tbody tr:nth-child(6) { animation-delay: 0.37s; }
+
+  td {
+    padding: 18px 24px;
+    font-size: 14px; font-weight: 400; color: var(--ink);
+    vertical-align: middle;
+  }
+
+  /* Product name cell */
+  .product-cell { display: flex; align-items: center; gap: 12px; }
+  .product-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--indigo); flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .product-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600; font-size: 14px; letter-spacing: -0.01em;
+  }
+
+  /* Qty pill */
+  .qty-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 13px;
+    min-width: 32px; height: 28px;
+    padding: 0 10px; border-radius: 7px;
+  }
+
+  /* Price */
+  .price-cell {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  .price-cell .sym { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-dim);
+    color: var(--green);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px; border-radius: 6px;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+  }
+
+  /* Date */
+  .date-cell { text-align: right; }
+  .date-main { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .date-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── FOOTER SUMMARY ── */
+  .table-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+  }
+  .footer-label { font-size: 13px; color: var(--muted); }
+  .footer-total {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px; letter-spacing: -0.03em;
+  }
+  .footer-total .sym { font-size: 14px; font-weight: 500; color: var(--muted); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 80px 40px;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  }
+  .empty-icon { font-size: 52px; margin-bottom: 16px; }
+  .empty-state h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 20px; margin-bottom: 8px;
+  }
+  .empty-state p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  .btn-shop {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--indigo); color: #fff;
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px;
+    padding: 12px 24px; border-radius: 10px; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 16px rgba(67,56,247,0.25);
+  }
+  .btn-shop:hover { background: var(--indigo-light); transform: translateY(-2px); color: #fff; }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="brand" href="/">Smart<span>Cart</span></a>
+  <div class="navbar-right">
+    <a class="nav-link" href="/cart/">🛒 Cart</a>
+    <a class="nav-link" href="/">← Shop</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Your Orders</h1>
+      <p class="page-subtitle">Track everything you've purchased</p>
+    </div>
+    {% if orders %}
+      <span class="orders-badge">{{ orders|length }} order{% if orders|length != 1 %}s{% endif %}</span>
+    {% endif %}
+  </div>
+
+  <div class="table-card">
+    {% if orders %}
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>
+              <div class="product-cell">
+                <div class="product-dot"></div>
+                <span class="product-name">{{ order.product.name }}</span>
+              </div>
+            </td>
+            <td><span class="qty-pill">× {{ order.quantity }}</span></td>
+            <td>
+              <span class="status-badge">
+                <span class="status-dot"></span> Delivered
+              </span>
+            </td>
+            <td class="price-cell"><span class="sym">₹</span>{{ order.total_price }}</td>
+            <td class="date-cell">
+              <div class="date-main">{{ order.created_at|date:"d M Y" }}</div>
+              <div class="date-time">{{ order.created_at|date:"h:i A" }}</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Footer total -->
+      <div class="table-footer">
+        <span class="footer-label">Total spent across all orders</span>
+        <span class="footer-total">
+          <span class="sym">₹</span>{{ orders|length }}<!-- replace with total sum if available -->
+        </span>
+      </div>
+
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No orders yet</h3>
+        <p>Your completed orders will appear here once you shop.</p>
+        <a href="/" class="btn-shop">Start Shopping →</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+</body>
+</html>

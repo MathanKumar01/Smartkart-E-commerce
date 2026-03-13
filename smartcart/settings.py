@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import os
+import dj_database_url
 
 load_dotenv()
 
@@ -84,14 +86,7 @@ WSGI_APPLICATION = "smartcart.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
- 'default': {
- 'ENGINE': 'django.db.backends.postgresql',
- 'NAME': 'smartcart_db',
- 'USER': 'postgres',
- 'PASSWORD': 'selvi@2mathan',
- 'HOST': 'localhost',
- 'PORT': '5432',
- }
+    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
 
 
@@ -146,4 +141,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

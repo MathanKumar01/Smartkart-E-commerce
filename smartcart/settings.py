@@ -32,6 +32,9 @@ SECRET_KEY = "django-insecure-lpk7@=^6iid_!d_fl-fzdv*+tph7q_4szro6we_-$gu)t&@h1)
 DEBUG = False
 
 ALLOWED_HOSTS =  ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://smartkart-e-commerce.onrender.com"
+]
 
 
 # Application definition

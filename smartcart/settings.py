@@ -15,6 +15,9 @@ import os
 from dotenv import load_dotenv
 import os
 import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 load_dotenv()
 
@@ -50,6 +53,8 @@ INSTALLED_APPS = [
     'products',
     'cart',
     'orders',
+    'cloudinary',
+'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -89,7 +94,14 @@ WSGI_APPLICATION = "smartcart.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'smartcart_db',
+        'USER': 'postgres',
+        'PASSWORD': 'selvi@2mathan',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 
@@ -145,4 +157,13 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUDINARY_CLOUD_NAME"),
+    'API_KEY': os.getenv("CLOUDINARY_API_KEY"),
+    'API_SECRET': os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

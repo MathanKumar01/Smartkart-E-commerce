@@ -1,0 +1,145 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "products",
+    "model": "product"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "cart",
+    "model": "cart"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "orders",
+    "model": "order"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "products",
+    "model": "wishlist"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 1,
+  "fields": {
+    "name": "Laptop",
+    "description": "ASUS TUF A15 (2025), AMD Ryzen 7 7445HS,RTX 3050-4GB,75W TGP,16GB DDR5(Upgradeable Upto 64GB) 512GB SSD,FHD,15.6\",144Hz,RGB Keyboard,Windows 11,Graphite Black,2.3 Kg FA506NCG-HN199W, Gaming Laptop",
+    "price": 50000.0,
+    "stock": 5,
+    "image": "products/images_2_aG4U2ki.jpg",
+    "category": "laptop"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 2,
+  "fields": {
+    "name": "Laptop",
+    "description": "acer [SmartChoice Aspire 3 Laptop Intel Core Celeron N4500 Processor Laptop (8 GB LPDDR4X SDRAM/512 GB SSD/Win11 Home/38 WHR/HD Webcam) A325-45 with 39.63 cm (15.6\") HD Display, Pure Silver, 1.5 KG",
+    "price": 31999.0,
+    "stock": 5,
+    "image": "products/71TpwcAN1PL_QfdU9j8._SL1500_.jpg",
+    "category": "laptop"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 3,
+  "fields": {
+    "name": "Dell 15",
+    "description": "Dell 15, 13th Gen Intel Core i5-1334U (16GB DDR4, 512GB SSD) Anti-Glare FHD 15.6\"/39.62cm, Windows 11, Microsoft Office Home 2024, Grey, 1.66kg, [Vostro 3530], 12 Month McAfee, Thin & Light Laptop",
+    "price": 56990.0,
+    "stock": 6,
+    "image": "products/712WiT-wexL_YU8vRPF._SL1500_.jpg",
+    "category": "laptop"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 4,
+  "fields": {
+    "name": "Lenovo IdeaPad",
+    "description": "Lenovo IdeaPad Slim 3, AMD Ryzen 5 5625U, 8GB RAM, 512GB SSD, FHD 15.6\"(39.6cm), Windows 11, Office Home 2024, Grey, 1.6Kg, 82XM011AIN, Integrated AMD Radeon Graphics, Thin and Light Laptop",
+    "price": 42990.0,
+    "stock": 7,
+    "image": "products/615itEeM5ZL_139n8Nu._SL1080_.jpg",
+    "category": "laptop"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 5,
+  "fields": {
+    "name": "realme NARZO 80",
+    "description": "realme NARZO 80 Pro 5G (Speed Silver,8GB+256GB) | Segment's 1st MediaTek Dimensity 7400 Chipset | 6000mAh Titan Battery + 80W Ultra Charge | 4500nits HyperGlow Esports Display | IP69 Waterproof",
+    "price": 19999.0,
+    "stock": 6,
+    "image": "products/71QnMG2gedL._SL1500_.jpg",
+    "category": "phone"
+  }
+},
+
+{
+  "model": "products.product",
+  "pk": 6,
+  "fields": {
+    "name": "iPhone 17 Pro Max",
+    "description": "Apple iPhone",
+    "price": 120000,
+    "stock": 5,
+    "image": "products/iphone.jpg",
+    "category": "phone"
+  }
+}
+]

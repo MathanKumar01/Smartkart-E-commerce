@@ -1,1 +1,1 @@
-web: gunicorn backend.smartcart.wsgi:application
+web: cd backend && gunicorn smartcart.wsgi:application

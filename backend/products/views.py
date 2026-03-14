@@ -3,15 +3,35 @@ from .models import Product, Wishlist
 from cart.models import Cart
 from django.db.models import Q
 
+
+CATEGORY_ALIASES = {
+    "accesories": "accessories",
+    "accessory": "accessories",
+    "mobile": "phone",
+    "mobiles": "phone",
+    "phones": "phone",
+    "laptops": "laptop",
+}
+
+
+def normalize_category(raw_value):
+    if not raw_value:
+        return ""
+    value = raw_value.strip().lower()
+    return CATEGORY_ALIASES.get(value, value)
+
 def product_list(request):
 
-    category = request.GET.get("category")
+    category = normalize_category(request.GET.get("category"))
     query = request.GET.get("q")
 
     products = Product.objects.all()
 
     if category:
-        products = products.filter(category__iexact=category)
+        if category == "accessories":
+            products = products.filter(category__in=["accessories", "accesories"])
+        else:
+            products = products.filter(category__iexact=category)
 
     if query:
         products = products.filter(
@@ -28,7 +48,8 @@ def product_list(request):
 
     return render(request, "products.html", {
         "products": products,
-        "cart_products": cart_products
+        "cart_products": cart_products,
+        "selected_category": category,
     })
 
 def product_detail(request, product_id):

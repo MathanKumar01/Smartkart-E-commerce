@@ -6,6 +6,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "smartcart.settings")
 django.setup()
 
 from products.models import Product
+if Product.objects.exists():
+    print("Products already exist. Skipping import.")
+    exit()
+
 
 df = pd.read_csv(r"C:\Users\MathanVini\Downloads\flipkart_com-ecommerce_sample.csv\flipkart_com-ecommerce_sample.csv")
 

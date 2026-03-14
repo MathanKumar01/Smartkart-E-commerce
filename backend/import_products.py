@@ -7,6 +7,11 @@ django.setup()
 
 from products.models import Product
 
+if Product.objects.exists():
+    print("Products already exist. Skipping import.")
+    exit()
+
+
 df = pd.read_csv(r"C:\Users\MathanVini\Downloads\flipkart_laptops (1).csv")
 
 # remove extra spaces in column names

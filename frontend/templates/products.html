@@ -319,19 +319,19 @@
   <div class="category-bar">
     <span class="cat-label">Filter:</span>
     <a href="/"
-       class="cat-btn {% if not request.GET.category %}active{% endif %}">
+       class="cat-btn {% if not selected_category %}active{% endif %}">
       All
     </a>
     <a href="/?category=laptop"
-       class="cat-btn {% if request.GET.category == 'laptop' %}active{% endif %}">
+       class="cat-btn {% if selected_category == 'laptop' %}active{% endif %}">
       💻 Laptops
     </a>
     <a href="/?category=phone"
-       class="cat-btn {% if request.GET.category == 'phone' %}active{% endif %}">
+       class="cat-btn {% if selected_category == 'phone' %}active{% endif %}">
       📱 Phones
     </a>
     <a href="/?category=accessories"
-       class="cat-btn {% if request.GET.category == 'accessories' %}active{% endif %}">
+       class="cat-btn {% if selected_category == 'accessories' %}active{% endif %}">
       🎧 Accessories
     </a>
   </div>
@@ -341,8 +341,8 @@
     <h2 class="section-title">
       {% if request.GET.q %}
         Results for "{{ request.GET.q }}"
-      {% elif request.GET.category %}
-        {{ request.GET.category|capfirst }}
+      {% elif selected_category %}
+        {{ selected_category|capfirst }}
       {% else %}
         All Products
       {% endif %}

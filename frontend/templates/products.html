@@ -360,7 +360,8 @@
 
       <a href="/product/{{ product.id }}/" class="card-link">
         <div class="img-wrap">
-  <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+  <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy"
+       onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=No+Image'">
   <span class="badge-new">New</span>
 </div>
         <div class="card-body">

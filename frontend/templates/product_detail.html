@@ -294,7 +294,8 @@
     <!-- LEFT: Image -->
     <div class="img-panel">
       <div class="img-main">
-        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy"
+             onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=No+Image'">
         <span class="img-badge">New Arrival</span>
       </div>
     </div>

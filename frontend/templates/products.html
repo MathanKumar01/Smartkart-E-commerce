@@ -3,8 +3,15 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, body * { font-family: 'Roboto', sans-serif; }
+
+  body { font-weight: 400; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+  button, [class*="btn-"], .nav-link, .cart-link { font-weight: 500; }
 
   :root {
     --ink: #0d0d14;
@@ -281,6 +288,72 @@
   .empty-icon { font-size: 48px; margin-bottom: 16px; }
   .empty h3 { font-weight: 700; font-size: 20px; color: var(--ink); margin-bottom: 8px; }
 
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(130deg, #3328db 0%, #5e54ff 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+  }
+
+  #splash.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .splash-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 38px;
+    font-weight: 800;
+    box-shadow: 0 12px 34px rgba(13,13,20,0.24);
+    animation: splashPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .splash-text {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .splash-track {
+    width: 130px;
+    height: 3px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .splash-fill {
+    height: 100%;
+    width: 0;
+    background: #fff;
+    animation: fillSplash 1s ease forwards;
+  }
+
+  @keyframes splashPop {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes fillSplash {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
   @media (max-width: 980px) {
     .navbar {
       height: auto;
@@ -396,6 +469,12 @@
 
 <body>
 
+<div id="splash">
+  <div class="splash-logo">S</div>
+  <div class="splash-text">SmartCart</div>
+  <div class="splash-track"><div class="splash-fill"></div></div>
+</div>
+
 <!-- NAVBAR -->
 <nav class="navbar">
   <a class="brand" href="/">Smart<span>Cart</span></a>
@@ -510,6 +589,15 @@
   {% endif %}
 
 </div>
+
+<script>
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var splash = document.getElementById('splash');
+      if (splash) splash.classList.add('hidden');
+    }, 1500);
+  });
+</script>
 
 </body>
 </html>

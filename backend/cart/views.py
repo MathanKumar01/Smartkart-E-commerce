@@ -1,14 +1,9 @@
-from django.shortcuts import redirect
-from .models import Cart
-from django.shortcuts import redirect, get_object_or_404
-from products.models import Product
-from django.contrib.auth.models import User
-from django.shortcuts import render
-
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 from .models import Cart
 from products.models import Product
 
+@login_required
 def add_to_cart(request, product_id):
 
     product = get_object_or_404(Product, id=product_id)
@@ -23,8 +18,7 @@ def add_to_cart(request, product_id):
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-from .models import Cart
-
+@login_required
 def cart_view(request):
 
     cart_items = Cart.objects.filter(user=request.user)
@@ -40,18 +34,22 @@ def cart_view(request):
         "total": total,
         "cart_count": cart_count
     })
+
+
+@login_required
 def increase_quantity(request, cart_id):
 
-    cart = Cart.objects.get(id=cart_id)
+    cart = get_object_or_404(Cart, id=cart_id, user=request.user)
     cart.quantity += 1
     cart.save()
 
     return redirect('/cart/')
 
 
+@login_required
 def decrease_quantity(request, cart_id):
 
-    cart = Cart.objects.get(id=cart_id)
+    cart = get_object_or_404(Cart, id=cart_id, user=request.user)
 
     if cart.quantity > 1:
         cart.quantity -= 1
@@ -60,9 +58,10 @@ def decrease_quantity(request, cart_id):
     return redirect('/cart/')
 
 
+@login_required
 def remove_item(request, cart_id):
 
-    cart = Cart.objects.get(id=cart_id)
+    cart = get_object_or_404(Cart, id=cart_id, user=request.user)
     cart.delete()
 
     return redirect('/cart/')

@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, body * { font-family: 'Roboto', sans-serif; }
+
+  body { font-weight: 400; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+  button, [class*="btn-"] { font-weight: 500; }
 
   :root {
     --ink: #0d0d14;
@@ -173,10 +181,124 @@
     text-decoration: none;
   }
   .brand-name span { color: var(--indigo); }
+
+  .error-box {
+    margin-bottom: 14px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .password-wrap {
+    position: relative;
+  }
+
+  .toggle-pass {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+
+  .toggle-pass:hover {
+    color: var(--indigo);
+    background: var(--indigo-dim);
+  }
+
+  .caps-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #b91c1c;
+    display: none;
+  }
+
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(130deg, #3328db 0%, #5e54ff 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+  }
+
+  #splash.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .splash-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 38px;
+    font-weight: 800;
+    box-shadow: 0 12px 34px rgba(13,13,20,0.24);
+    animation: splashPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .splash-text {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .splash-track {
+    width: 130px;
+    height: 3px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .splash-fill {
+    height: 100%;
+    width: 0;
+    background: #fff;
+    animation: fillSplash 1s ease forwards;
+  }
+
+  @keyframes splashPop {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes fillSplash {
+    from { width: 0; }
+    to { width: 100%; }
+  }
 </style>
 </head>
 
 <body>
+  <div id="splash">
+    <div class="splash-logo">S</div>
+    <div class="splash-text">SmartCart</div>
+    <div class="splash-track"><div class="splash-fill"></div></div>
+  </div>
+
   <div class="card">
 
     <div class="header">
@@ -185,19 +307,25 @@
       <p class="subtitle">Sign in to your account</p>
     </div>
 
-    <form method="POST">
+    <form id="loginForm" method="POST">
       {% csrf_token %}
+
+      <div id="loginError" class="error-box" {% if not error %}style="display:none"{% endif %}>{{ error }}</div>
 
       <div class="field">
         <label for="username">Username</label>
         <input id="username" type="text" name="username"
-          placeholder="Enter your username" autocomplete="username">
+          placeholder="Enter your username" autocomplete="username" value="{{ username_value }}">
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password" name="password"
-          placeholder="••••••••" autocomplete="current-password">
+        <div class="password-wrap">
+          <input id="password" type="password" name="password"
+            placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="toggle-pass" data-target="password">Show</button>
+        </div>
+        <div id="capsHintLogin" class="caps-hint">Caps Lock is ON</div>
       </div>
 
       <button type="submit" class="btn-login">Sign In</button>
@@ -222,5 +350,102 @@
     </div>
 
   </div>
+
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var splash = document.getElementById('splash');
+        if (splash) splash.classList.add('hidden');
+      }, 1500);
+    });
+
+    (function () {
+      var form = document.getElementById('loginForm');
+      var errorBox = document.getElementById('loginError');
+      var passwordInput = document.getElementById('password');
+      var capsHint = document.getElementById('capsHintLogin');
+
+      if (!form || !errorBox) {
+        return;
+      }
+
+      var toggleButtons = document.querySelectorAll('.toggle-pass');
+      toggleButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var targetId = button.getAttribute('data-target');
+          var input = document.getElementById(targetId);
+          if (!input) {
+            return;
+          }
+          var isPassword = input.getAttribute('type') === 'password';
+          input.setAttribute('type', isPassword ? 'text' : 'password');
+          button.textContent = isPassword ? 'Hide' : 'Show';
+        });
+      });
+
+      if (passwordInput && capsHint) {
+        var updateCapsHint = function (event) {
+          var on = event.getModifierState && event.getModifierState('CapsLock');
+          capsHint.style.display = on ? 'block' : 'none';
+        };
+
+        passwordInput.addEventListener('keydown', updateCapsHint);
+        passwordInput.addEventListener('keyup', updateCapsHint);
+        passwordInput.addEventListener('blur', function () {
+          capsHint.style.display = 'none';
+        });
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var submitButton = form.querySelector('button[type="submit"]');
+        var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+        var formData = new FormData(form);
+
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
+
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Checking...';
+        }
+
+        fetch(form.action || window.location.href, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfInput ? csrfInput.value : ''
+          },
+          body: formData,
+          credentials: 'same-origin'
+        })
+          .then(function (response) {
+            return response.json().then(function (payload) {
+              return { ok: response.ok, payload: payload };
+            });
+          })
+          .then(function (result) {
+            if (result.ok && result.payload.ok) {
+              window.location.href = result.payload.redirect_url || '/users/dashboard/';
+              return;
+            }
+
+            errorBox.textContent = result.payload.error || 'Unable to login right now.';
+            errorBox.style.display = 'block';
+          })
+          .catch(function () {
+            errorBox.textContent = 'Network error. Please try again.';
+            errorBox.style.display = 'block';
+          })
+          .finally(function () {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.textContent = 'Sign In';
+            }
+          });
+      });
+    })();
+  </script>
 </body>
 </html>

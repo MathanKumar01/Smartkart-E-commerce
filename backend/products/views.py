@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Wishlist
 from cart.models import Cart
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
 CATEGORY_ALIASES = {
@@ -20,6 +21,8 @@ def normalize_category(raw_value):
     value = raw_value.strip().lower()
     return CATEGORY_ALIASES.get(value, value)
 
+
+@login_required
 def product_list(request):
 
     category = normalize_category(request.GET.get("category"))
@@ -52,6 +55,8 @@ def product_list(request):
         "selected_category": category,
     })
 
+
+@login_required
 def product_detail(request, product_id):
 
     product = get_object_or_404(Product, id=product_id)
@@ -61,6 +66,7 @@ def product_detail(request, product_id):
     })
 
 
+@login_required
 def add_to_wishlist(request, product_id):
 
     product = Product.objects.get(id=product_id)
@@ -73,6 +79,7 @@ def add_to_wishlist(request, product_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+@login_required
 def wishlist_view(request):
 
     items = Wishlist.objects.filter(user=request.user)
@@ -80,6 +87,7 @@ def wishlist_view(request):
     return render(request, "wishlist.html", {"items": items})
 
 
+@login_required
 def remove_from_wishlist(request, product_id):
 
     item = get_object_or_404(Wishlist, user=request.user, product_id=product_id)

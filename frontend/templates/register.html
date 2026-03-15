@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, body * { font-family: 'Roboto', sans-serif; }
+
+  body { font-weight: 400; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+  button, [class*="btn-"] { font-weight: 500; }
 
   :root {
     --ink: #0d0d14;
@@ -167,6 +175,55 @@
     text-decoration: none;
   }
   .brand-name span { color: var(--indigo); }
+
+  .error-box {
+    margin-bottom: 14px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .password-wrap {
+    position: relative;
+  }
+
+  .toggle-pass {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+
+  .toggle-pass:hover {
+    color: var(--indigo);
+    background: var(--indigo-dim);
+  }
+
+  .caps-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #b91c1c;
+    display: none;
+  }
+
+  .password-rules {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 </style>
 </head>
 
@@ -182,22 +239,31 @@
     <form method="POST">
       {% csrf_token %}
 
+      {% if error %}
+        <div class="error-box">{{ error }}</div>
+      {% endif %}
+
       <div class="field">
         <label for="username">Username</label>
         <input id="username" type="text" name="username"
-          placeholder="Choose a username" autocomplete="username">
+          placeholder="Choose a username" autocomplete="username" value="{{ username_value }}">
       </div>
 
       <div class="field">
         <label for="email">Email</label>
         <input id="email" type="email" name="email"
-          placeholder="Enter your email" autocomplete="email">
+          placeholder="Enter your email" autocomplete="email" value="{{ email_value }}">
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password" name="password"
-          placeholder="••••••••" autocomplete="new-password">
+        <div class="password-wrap">
+          <input id="password" type="password" name="password"
+            placeholder="••••••••" autocomplete="new-password">
+          <button type="button" class="toggle-pass" data-target="password">Show</button>
+        </div>
+        <div id="capsHintRegister" class="caps-hint">Caps Lock is ON</div>
+        <div class="password-rules">Use at least 8 characters, 1 uppercase letter, 1 number, and 1 special character.</div>
       </div>
 
       <button type="submit" class="btn-register">Create Account</button>
@@ -218,5 +284,39 @@
     </div>
 
   </div>
+
+  <script>
+    (function () {
+      var passwordInput = document.getElementById('password');
+      var capsHint = document.getElementById('capsHintRegister');
+
+      var toggleButtons = document.querySelectorAll('.toggle-pass');
+      toggleButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var targetId = button.getAttribute('data-target');
+          var input = document.getElementById(targetId);
+          if (!input) {
+            return;
+          }
+          var isPassword = input.getAttribute('type') === 'password';
+          input.setAttribute('type', isPassword ? 'text' : 'password');
+          button.textContent = isPassword ? 'Hide' : 'Show';
+        });
+      });
+
+      if (passwordInput && capsHint) {
+        var updateCapsHint = function (event) {
+          var on = event.getModifierState && event.getModifierState('CapsLock');
+          capsHint.style.display = on ? 'block' : 'none';
+        };
+
+        passwordInput.addEventListener('keydown', updateCapsHint);
+        passwordInput.addEventListener('keyup', updateCapsHint);
+        passwordInput.addEventListener('blur', function () {
+          capsHint.style.display = 'none';
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

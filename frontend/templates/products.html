@@ -574,6 +574,7 @@
   <div class="nav-actions">
     {% if user.is_authenticated %}
       <span class="nav-greeting">Hello, <strong>{{ user.username }}</strong></span>
+      <a class="nav-link" href="/users/dashboard/">Dashboard</a>
       <a class="nav-link" href="/users/logout/">Logout</a>
     {% else %}
       <a class="nav-link accent" href="/users/login/">Login</a>

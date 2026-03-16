@@ -72,6 +72,26 @@
     margin-bottom: 36px;
     animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
   }
+
+  .flash-message {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid transparent;
+  }
+
+  .flash-error {
+    color: #a61e1e;
+    background: rgba(240, 62, 62, 0.1);
+    border-color: rgba(240, 62, 62, 0.25);
+  }
+
+  .flash-success {
+    color: #0f8a5f;
+    background: rgba(0, 176, 122, 0.12);
+    border-color: rgba(0, 176, 122, 0.25);
+  }
   .page-title {
     font-family: 'Syne', sans-serif;
     font-weight: 800; font-size: 32px; letter-spacing: -0.03em;
@@ -268,6 +288,68 @@
   }
   .btn-checkout:active { transform: translateY(0); }
 
+  .checkout-form {
+    margin: 0;
+  }
+
+  .payment-field {
+    margin-bottom: 12px;
+  }
+
+  .address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .address-grid .full {
+    grid-column: 1 / -1;
+  }
+
+  .text-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+
+  .text-input:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px var(--indigo-dim);
+  }
+
+  .payment-label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .payment-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+
+  .payment-select:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px var(--indigo-dim);
+  }
+
   .btn-continue {
     width: 100%; margin-top: 12px;
     background: transparent; color: var(--muted);
@@ -381,6 +463,10 @@
     .trust-badges {
       gap: 10px;
     }
+
+    .address-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -391,12 +477,21 @@
 <nav class="navbar">
   <a class="brand" href="/">Smart<span>Cart</span></a>
   <div class="navbar-right">
+    <a class="btn-continue-nav" href="/users/dashboard/">🏠 Dashboard</a>
     <a class="btn-continue-nav" href="/">← Continue Shopping</a>
   </div>
 </nav>
 
 <!-- PAGE -->
 <div class="page">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="flash-message {% if message.tags == 'error' %}flash-error{% else %}flash-success{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 
   <div class="page-header">
     <h1 class="page-title">Your Cart</h1>
@@ -465,7 +560,29 @@
         <span class="summary-total-value"><span class="sym">₹</span>{{ total }}</span>
       </div>
 
-      <a href="/orders/checkout/" class="btn-checkout">Proceed to Checkout →</a>
+      <form action="/orders/checkout/" method="post" class="checkout-form">
+        {% csrf_token %}
+        <div class="payment-field">
+          <label class="payment-label">Delivery Address</label>
+          <div class="address-grid">
+            <input class="text-input full" type="text" name="shipping_name" placeholder="Full Name" required>
+            <input class="text-input full" type="tel" name="phone_number" placeholder="Phone Number" maxlength="15" required>
+            <input class="text-input full" type="text" name="address_line" placeholder="Flat / Area / Street Address" required>
+            <input class="text-input" type="text" name="city" placeholder="City" required>
+            <input class="text-input" type="text" name="state" placeholder="State" required>
+            <input class="text-input full" type="text" name="postal_code" placeholder="Pincode" maxlength="6" required>
+          </div>
+        </div>
+        <div class="payment-field">
+          <label for="payment_method" class="payment-label">Payment Method</label>
+          <select id="payment_method" name="payment_method" class="payment-select">
+            <option value="cod">Cash on Delivery</option>
+            <option value="upi">UPI</option>
+            <option value="card">Card</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-checkout">Proceed to Checkout →</button>
+      </form>
       <a href="/" class="btn-continue">← Continue Shopping</a>
 
       <div class="trust-badges">

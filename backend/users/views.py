@@ -5,11 +5,21 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
+from django.db.models import Sum
 import re
+
+from orders.models import Order
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    user_orders = Order.objects.filter(user=request.user)
+    order_count = user_orders.count()
+    total_spent = user_orders.aggregate(total=Sum('total_price'))['total'] or 0
+
+    return render(request, 'dashboard.html', {
+        'order_count': order_count,
+        'total_spent': round(total_spent, 2),
+    })
 
 def register(request):
 

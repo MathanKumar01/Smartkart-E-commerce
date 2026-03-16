@@ -174,9 +174,36 @@
     text-transform: uppercase;
     padding: 4px 10px; border-radius: 6px;
   }
+  .status-badge.status-ordered { background: rgba(66, 133, 244, 0.12); color: #1a5bcc; }
+  .status-badge.status-shipped { background: rgba(155, 89, 182, 0.12); color: #7b2ca5; }
+  .status-badge.status-out_for_delivery { background: rgba(245, 158, 11, 0.16); color: #a15c00; }
+  .status-badge.status-delivered { background: var(--green-dim); color: var(--green); }
   .status-dot {
     width: 6px; height: 6px; border-radius: 50%;
     background: var(--green);
+  }
+
+  .track-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--indigo);
+    background: var(--indigo-dim);
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .track-link:hover {
+    background: rgba(67, 56, 247, 0.16);
+  }
+
+  .tracking-id {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
   }
 
   /* Date */
@@ -228,6 +255,7 @@
 <nav class="navbar">
   <a class="brand" href="/">Smart<span>Cart</span></a>
   <div class="navbar-right">
+    <a class="nav-link" href="/users/dashboard/">🏠 Dashboard</a>
     <a class="nav-link" href="/cart/">🛒 Cart</a>
     <a class="nav-link" href="/">← Shop</a>
   </div>
@@ -253,7 +281,9 @@
           <tr>
             <th>Product</th>
             <th>Qty</th>
+            <th>Payment</th>
             <th>Status</th>
+            <th>ETA</th>
             <th>Total</th>
             <th>Date</th>
           </tr>
@@ -268,10 +298,21 @@
               </div>
             </td>
             <td><span class="qty-pill">× {{ order.quantity }}</span></td>
+            <td>{{ order.get_payment_method_display }}</td>
             <td>
-              <span class="status-badge">
-                <span class="status-dot"></span> Delivered
+              <span class="status-badge status-{{ order.shipping_status }}">
+                <span class="status-dot"></span>
+                {{ order.get_shipping_status_display }}
               </span>
+              <div class="tracking-id">Tracking: {{ order.tracking_id }}</div>
+              <a class="track-link" href="/orders/track/{{ order.id }}/">Track Order →</a>
+            </td>
+            <td>
+              {% if order.expected_delivery_date %}
+                {{ order.expected_delivery_date|date:"d M Y" }}
+              {% else %}
+                TBA
+              {% endif %}
             </td>
             <td class="price-cell"><span class="sym">₹</span>{{ order.total_price }}</td>
             <td class="date-cell">
@@ -287,7 +328,7 @@
       <div class="table-footer">
         <span class="footer-label">Total spent across all orders</span>
         <span class="footer-total">
-          <span class="sym">₹</span>{{ orders|length }}<!-- replace with total sum if available -->
+          <span class="sym">₹</span>{{ total_spent|floatformat:2 }}
         </span>
       </div>
 

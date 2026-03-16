@@ -1,581 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cart — SmartCart</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Cart — SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#12121a; --brand:#2563eb; --brand-h:#1d4ed8;
+  --brand-dim:rgba(37,99,235,0.09); --surface:#fff; --glass:rgba(255,255,255,0.86);
+  --bg:#f4f5f9; --bg2:#eef0f6; --muted:#7e7e9a; --muted2:#b0b0c8;
+  --border:#e2e4ee; --border2:#ececf4;
+  --green:#059669; --green-d:rgba(5,150,105,0.10);
+  --red:#dc2626; --red-d:rgba(220,38,38,0.09);
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'Outfit','Noto Sans',Arial,sans-serif;
+  --sb:0 6px 22px rgba(37,99,235,0.28);
+  --s1:0 2px 10px rgba(10,10,18,0.06); --s2:0 8px 30px rgba(10,10,18,0.10);
+}
+html { font-size:16px; } body { font-family:var(--font-b); background:var(--bg); color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+/* Ensure rupee symbol always renders from a system font that supports it */
+.rupee { font-family: Arial, 'Noto Sans', sans-serif; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
 
-  body, body * { font-family: 'Roboto', sans-serif; }
+/* NAV */
+.nav { position:sticky; top:0; z-index:100; height:64px; display:flex; align-items:center; gap:14px; padding:0 clamp(16px,4vw,56px); background:var(--glass); backdrop-filter:blur(20px); border-bottom:1px solid var(--border2); }
+.nav-logo { width:34px; height:34px; border-radius:10px; background:var(--brand); display:grid; place-items:center; font-family:var(--font-d); font-size:16px; font-weight:700; color:#fff; box-shadow:var(--sb); flex-shrink:0; text-decoration:none; }
+.nav-name { font-family:var(--font-d); font-size:19px; font-weight:700; color:var(--ink); text-decoration:none; }
+.nav-name em { font-style:normal; color:var(--brand); }
+.nav-menu-btn { display:none; border:1.5px solid var(--border); background:#fff; border-radius:9px; padding:6px 10px; font-size:13px; color:var(--ink); }
+.nav-end { margin-left:auto; display:flex; gap:6px; }
+.nb { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:7px 13px; border-radius:8px; text-decoration:none; color:var(--muted); transition:background 0.18s, color 0.18s; border:none; background:transparent; cursor:pointer; font-family:var(--font-b); }
+.nb:hover { background:var(--brand-dim); color:var(--brand); }
 
-  body { font-weight: 400; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
-  button, [class*="btn-"] { font-weight: 500; }
+/* PAGE */
+.page { max-width:1100px; margin:0 auto; padding:44px clamp(16px,4vw,56px) 80px; }
+.page-hdr { margin-bottom:32px; animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+.page-title { font-family:var(--font-d); font-size:30px; font-weight:700; color:var(--ink); }
+.page-sub { font-size:13.5px; color:var(--muted); margin-top:4px; }
 
-  :root {
-    --ink: #0d0d14;
-    --indigo: #4338f7;
-    --indigo-light: #6d63ff;
-    --indigo-dim: rgba(67,56,247,0.08);
-    --surface: #ffffff;
-    --bg: #f5f5f8;
-    --muted: #8a8a99;
-    --border: #e8e8ef;
-    --green: #00b07a;
-    --red: #f03e3e;
-    --red-dim: rgba(240,62,62,0.08);
-  }
+/* FLASH */
+.flash { padding:11px 14px; border-radius:10px; font-size:13.5px; border:1px solid transparent; margin-bottom:14px; }
+.flash-err { color:#991b1b; background:rgba(220,38,38,0.08); border-color:rgba(220,38,38,0.2); }
+.flash-ok { color:#065f46; background:rgba(5,150,105,0.09); border-color:rgba(5,150,105,0.2); }
 
-  body {
-    background: var(--bg);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--ink);
-    min-height: 100vh;
-  }
+/* LAYOUT */
+.layout { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:24px; align-items:start; min-width:0; }
+@media(max-width:1024px) { .layout { grid-template-columns:1fr; } .summary { order:-1; max-width:600px; } }
 
-  /* ── NAVBAR ── */
-  .navbar {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 clamp(16px, 4vw, 48px);
-    height: 68px;
-    display: flex; align-items: center; gap: 16px;
-  }
-  .brand {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 22px;
-    color: var(--ink); text-decoration: none;
-    letter-spacing: -0.03em;
-  }
-  .brand span { color: var(--indigo); }
-  .navbar-right { margin-left: auto; }
-  .btn-continue-nav {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 13px; font-weight: 500;
-    color: var(--muted); text-decoration: none;
-    padding: 8px 14px; border-radius: 8px;
-    transition: background 0.18s, color 0.18s;
-  }
-  .btn-continue-nav:hover { background: var(--indigo-dim); color: var(--indigo); }
+/* CART LIST */
+.cart-list { display:flex; flex-direction:column; gap:12px; min-width:0; overflow:hidden; }
+.cart-row {
+  background:var(--surface); border:1px solid var(--border2); border-radius:16px; padding:20px 24px;
+  display:flex; align-items:center; gap:18px;
+  box-shadow:var(--s1);
+  animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  transition:box-shadow 0.25s, border-color 0.25s;
+}
+.cart-row:hover { box-shadow:var(--s2); border-color:rgba(37,99,235,0.18); }
+.cart-row:nth-child(1){animation-delay:0.04s} .cart-row:nth-child(2){animation-delay:0.08s}
+.cart-row:nth-child(3){animation-delay:0.12s} .cart-row:nth-child(4){animation-delay:0.16s}
+.cart-row:nth-child(5){animation-delay:0.20s}
+.item-info { flex:1; min-width:0; }
+.item-name { font-family:var(--font-d); font-weight:600; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.item-unit { font-size:12.5px; color:var(--muted); margin-top:3px; }
 
-  /* ── PAGE ── */
-  .page {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 48px clamp(16px, 4vw, 48px) 80px;
-  }
+/* QTY */
+.qty-ctrl { display:flex; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+.qty-btn { display:flex; align-items:center; justify-content:center; width:34px; height:34px; background:transparent; border:none; font-size:17px; font-weight:400; cursor:pointer; color:var(--ink); text-decoration:none; transition:background 0.18s, color 0.18s; flex-shrink:0; }
+.qty-btn:hover { background:var(--brand-dim); color:var(--brand); }
+.qty-btn.minus:hover { background:var(--red-d); color:var(--red); }
+.qty-val { font-family:var(--font-b); font-weight:700; font-size:14px; min-width:30px; text-align:center; }
 
-  .page-header {
-    margin-bottom: 36px;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
-  }
+/* ROW TOTAL */
+.item-total { font-family:var(--font-b); font-weight:700; font-size:17px; min-width:80px; text-align:right; }
 
-  .flash-message {
-    margin-bottom: 16px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    border: 1px solid transparent;
-  }
+/* REMOVE */
+.btn-rm { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; border:1px solid transparent; background:transparent; color:var(--muted2); font-size:14px; cursor:pointer; text-decoration:none; transition:all 0.18s; flex-shrink:0; }
+.btn-rm:hover { background:var(--red-d); color:var(--red); border-color:rgba(220,38,38,0.2); }
 
-  .flash-error {
-    color: #a61e1e;
-    background: rgba(240, 62, 62, 0.1);
-    border-color: rgba(240, 62, 62, 0.25);
-  }
+/* EMPTY */
+.empty-cart { background:var(--surface); border:1px solid var(--border2); border-radius:16px; padding:64px 40px; text-align:center; animation:fadeUp 0.5s ease 0.05s both; }
+.empty-ico { font-size:50px; margin-bottom:14px; }
+.empty-cart h3 { font-family:var(--font-d); font-weight:700; font-size:20px; margin-bottom:7px; }
+.empty-cart p { font-size:13.5px; color:var(--muted); }
+.empty-cart .cta { margin-top:14px; display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-size:13px; color:var(--brand); font-weight:600; }
 
-  .flash-success {
-    color: #0f8a5f;
-    background: rgba(0, 176, 122, 0.12);
-    border-color: rgba(0, 176, 122, 0.25);
-  }
-  .page-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 32px; letter-spacing: -0.03em;
-    line-height: 1;
-  }
-  .page-subtitle {
-    font-size: 14px; color: var(--muted); margin-top: 6px;
-  }
+/* SUMMARY */
+.summary { background:var(--surface); border:1px solid var(--border2); border-radius:16px; padding:22px; position:sticky; top:80px; animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.18s both; box-shadow:var(--s1); min-width:0; overflow:hidden; }
+.sum-title { font-family:var(--font-d); font-weight:700; font-size:15px; margin-bottom:16px; }
+.sum-line { display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); padding:7px 0; border-bottom:1px solid var(--border2); }
+.sum-line:last-of-type { border-bottom:none; }
+.sum-line span:last-child { font-weight:500; color:var(--ink); }
+.sum-divider { height:1px; background:var(--border); margin:4px 0 16px; }
+.sum-total { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+.sum-total-lbl { font-family:var(--font-b); font-weight:700; font-size:14px; }
+.sum-total-val { font-family:var(--font-b); font-weight:800; font-size:24px; color:var(--ink); }
+.sum-total-val .sym { font-family:Arial,sans-serif; font-size:14px; font-weight:500; color:var(--muted); }
 
-  /* ── TWO-COL LAYOUT ── */
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 28px;
-    align-items: start;
-  }
-  @media (max-width: 800px) {
-    .layout { grid-template-columns: 1fr; }
-    .summary-panel { order: -1; }
-  }
+/* FORM FIELDS IN SUMMARY */
+.co-section-lbl { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; display:block; }
+.help-txt { font-size:11.5px; color:var(--muted); margin:-2px 0 8px; }
+.saved-address-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.saved-address-actions a { text-decoration:none; font-size:11.5px; color:var(--brand); background:var(--brand-dim); border-radius:8px; padding:5px 9px; }
+.addr-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.addr-grid .full { grid-column:1/-1; }
+.text-inp { width:100%; border:1.5px solid var(--border); border-radius:9px; padding:9px 11px; background:var(--surface); font-size:13px; color:var(--ink); outline:none; font-family:var(--font-b); transition:border-color 0.18s, box-shadow 0.18s; }
+.text-inp:focus { border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-dim); }
+.pay-select { width:100%; border:1.5px solid var(--border); border-radius:9px; padding:9px 11px; background:var(--surface); font-size:13px; color:var(--ink); outline:none; font-family:var(--font-b); margin-bottom:10px; transition:border-color 0.18s; }
+.pay-select:focus { border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-dim); }
+.save-opts { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+.ck-row { display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--muted); }
+.ck-row input[type="checkbox"] { accent-color: var(--brand); }
 
-  /* ── CART ITEMS ── */
-  .cart-list { display: flex; flex-direction: column; gap: 14px; }
+.btn-checkout { width:100%; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:14px; font-size:14.5px; font-weight:700; font-family:var(--font-b); cursor:pointer; text-decoration:none; display:block; text-align:center; transition:background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow:var(--sb); }
+.btn-checkout:hover { background:var(--brand-h); transform:translateY(-1px); box-shadow:0 10px 28px rgba(37,99,235,0.38); color:#fff; }
+.btn-continue { width:100%; margin-top:10px; background:transparent; color:var(--muted); border:1.5px solid var(--border); border-radius:12px; padding:12px; font-size:13.5px; font-weight:500; font-family:var(--font-b); cursor:pointer; text-decoration:none; display:block; text-align:center; transition:border-color 0.18s, color 0.18s, background 0.18s; }
+.btn-continue:hover { border-color:var(--brand); color:var(--brand); background:var(--brand-dim); }
 
-  .cart-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
-    transition: box-shadow 0.25s, border-color 0.25s;
-  }
-  .cart-row:hover {
-    box-shadow: 0 8px 32px rgba(13,13,20,0.08);
-    border-color: rgba(67,56,247,0.2);
-  }
-  .cart-row:nth-child(1) { animation-delay: 0.05s; }
-  .cart-row:nth-child(2) { animation-delay: 0.1s; }
-  .cart-row:nth-child(3) { animation-delay: 0.15s; }
-  .cart-row:nth-child(4) { animation-delay: 0.2s; }
-  .cart-row:nth-child(5) { animation-delay: 0.25s; }
+.urgency { margin-top:10px; font-size:12px; color:#9a3412; background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:10px 12px; }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+.exit-pop { position:fixed; inset:0; background:rgba(12,18,36,0.58); display:none; align-items:center; justify-content:center; z-index:3000; }
+.exit-pop.show { display:flex; }
+.exit-box { width:min(92vw, 380px); background:#fff; border-radius:16px; border:1px solid var(--border2); padding:20px; text-align:center; }
+.exit-box h3 { font-family:var(--font-d); font-size:22px; margin-bottom:6px; }
+.exit-box p { font-size:13px; color:var(--muted); margin-bottom:10px; }
+.coupon-tag { background:var(--green-d); color:var(--green); border-radius:8px; padding:6px 10px; font-weight:700; display:inline-block; margin-bottom:10px; }
+.exit-actions { display:flex; gap:8px; }
+.exit-actions button { flex:1; border:none; border-radius:10px; padding:10px; cursor:pointer; font-weight:600; }
+.exit-actions .keep { background:var(--brand); color:#fff; }
+.exit-actions .close { background:#eef2ff; color:#334155; }
 
-  .item-info { flex: 1; min-width: 0; }
-  .item-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600; font-size: 15px;
-    letter-spacing: -0.01em;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .item-unit-price {
-    font-size: 13px; color: var(--muted); margin-top: 3px;
-  }
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(7,10,23,0.55);z-index:300;}
+.drawer-overlay.show{display:block;}
+.mobile-drawer{position:fixed;top:0;right:-280px;width:260px;height:100vh;background:#fff;z-index:301;border-left:1px solid var(--border2);padding:16px;transition:right .2s ease;display:flex;flex-direction:column;gap:10px;}
+.mobile-drawer.show{right:0;}
+.mobile-drawer a{text-decoration:none;color:var(--ink);padding:10px 12px;border-radius:9px;background:var(--bg2);}
 
-  /* Qty Controls */
-  .qty-control {
-    display: flex; align-items: center; gap: 0;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .qty-btn {
-    display: flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px;
-    background: transparent; border: none;
-    font-size: 18px; font-weight: 400; line-height: 1;
-    cursor: pointer; color: var(--ink);
-    text-decoration: none;
-    transition: background 0.18s, color 0.18s;
-    flex-shrink: 0;
-  }
-  .qty-btn:hover { background: var(--indigo-dim); color: var(--indigo); }
-  .qty-btn.minus:hover { background: var(--red-dim); color: var(--red); }
-  .qty-val {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 14px;
-    min-width: 32px; text-align: center;
-    color: var(--ink);
-  }
+.trust-row { display:flex; justify-content:center; gap:16px; margin-top:18px; padding-top:16px; border-top:1px solid var(--border2); }
+.trust-item { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; color:var(--muted2); }
+.trust-item span:first-child { font-size:17px; }
 
-  /* Row Total */
-  .item-total {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 17px;
-    letter-spacing: -0.02em;
-    min-width: 90px; text-align: right;
-  }
-
-  /* Remove */
-  .btn-remove {
-    display: flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px; border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--muted); font-size: 16px;
-    cursor: pointer; text-decoration: none;
-    transition: background 0.18s, color 0.18s, border-color 0.18s;
-    flex-shrink: 0;
-  }
-  .btn-remove:hover {
-    background: var(--red-dim);
-    color: var(--red);
-    border-color: rgba(240,62,62,0.2);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-cart {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 72px 40px;
-    text-align: center;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.05s both;
-  }
-  .empty-icon { font-size: 52px; margin-bottom: 16px; }
-  .empty-cart h3 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 20px; margin-bottom: 8px;
-  }
-  .empty-cart p { font-size: 14px; color: var(--muted); }
-
-  /* ── SUMMARY PANEL ── */
-  .summary-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    position: sticky; top: 88px;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s both;
-  }
-
-  .summary-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 17px;
-    letter-spacing: -0.02em;
-    margin-bottom: 24px;
-  }
-
-  .summary-line {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 14px; color: var(--muted);
-    padding: 9px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .summary-line:last-of-type { border-bottom: none; }
-  .summary-line span:last-child { font-weight: 500; color: var(--ink); }
-
-  .summary-divider {
-    height: 1px; background: var(--border); margin: 4px 0 20px;
-  }
-
-  .summary-total {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 24px;
-  }
-  .summary-total-label {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 16px;
-  }
-  .summary-total-value {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 26px;
-    letter-spacing: -0.03em; color: var(--ink);
-  }
-  .summary-total-value .sym {
-    font-size: 16px; font-weight: 500; color: var(--muted);
-  }
-
-  .btn-checkout {
-    width: 100%;
-    background: var(--indigo); color: #fff;
-    border: none; border-radius: 12px;
-    padding: 15px; font-size: 15px; font-weight: 600;
-    font-family: 'Syne', sans-serif;
-    letter-spacing: -0.01em;
-    cursor: pointer; text-decoration: none;
-    display: block; text-align: center;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
-  }
-  .btn-checkout:hover {
-    background: var(--indigo-light);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(67,56,247,0.35);
-    color: #fff;
-  }
-  .btn-checkout:active { transform: translateY(0); }
-
-  .checkout-form {
-    margin: 0;
-  }
-
-  .payment-field {
-    margin-bottom: 12px;
-  }
-
-  .address-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .address-grid .full {
-    grid-column: 1 / -1;
-  }
-
-  .text-input {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: #fff;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s;
-  }
-
-  .text-input:focus {
-    border-color: var(--indigo);
-    box-shadow: 0 0 0 3px var(--indigo-dim);
-  }
-
-  .payment-label {
-    display: block;
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-  }
-
-  .payment-select {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: #fff;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s;
-  }
-
-  .payment-select:focus {
-    border-color: var(--indigo);
-    box-shadow: 0 0 0 3px var(--indigo-dim);
-  }
-
-  .btn-continue {
-    width: 100%; margin-top: 12px;
-    background: transparent; color: var(--muted);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 13px; font-size: 14px; font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer; text-decoration: none;
-    display: block; text-align: center;
-    transition: border-color 0.18s, color 0.18s, background 0.18s;
-  }
-  .btn-continue:hover {
-    border-color: var(--indigo);
-    color: var(--indigo);
-    background: var(--indigo-dim);
-  }
-
-  .trust-badges {
-    display: flex; justify-content: center; gap: 18px;
-    margin-top: 20px; padding-top: 18px;
-    border-top: 1px solid var(--border);
-  }
-  .badge-item {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    font-size: 11px; color: var(--muted); font-weight: 400;
-  }
-  .badge-item span:first-child { font-size: 18px; }
-
-  @media (max-width: 800px) {
-    .navbar {
-      height: auto;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .navbar-right {
-      margin-left: 0;
-      width: 100%;
-    }
-
-    .btn-continue-nav {
-      width: 100%;
-      justify-content: center;
-      border: 1px solid var(--border);
-    }
-
-    .page {
-      padding-top: 24px;
-      padding-bottom: 32px;
-    }
-
-    .page-title {
-      font-size: 28px;
-    }
-
-    .summary-panel {
-      position: static;
-      order: 2;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .cart-row {
-      padding: 14px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-areas:
-        "info remove"
-        "qty total";
-      row-gap: 10px;
-      column-gap: 12px;
-      align-items: center;
-    }
-
-    .item-info {
-      grid-area: info;
-    }
-
-    .qty-control {
-      grid-area: qty;
-      justify-self: start;
-    }
-
-    .item-total {
-      grid-area: total;
-      justify-self: end;
-      min-width: 0;
-      font-size: 18px;
-    }
-
-    .btn-remove {
-      grid-area: remove;
-      justify-self: end;
-    }
-
-    .item-name {
-      white-space: normal;
-      line-height: 1.3;
-    }
-
-    .summary-panel {
-      padding: 18px;
-    }
-
-    .summary-total-value {
-      font-size: 22px;
-    }
-
-    .trust-badges {
-      gap: 10px;
-    }
-
-    .address-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+@media(max-width:1024px) { .summary { position:static; } }
+@media(max-width:860px){
+  .nav{height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;gap:8px;}
+  .nav-menu-btn{display:inline-block;}
+  .nav-end{display:none;}
+}
+@media(max-width:600px) {
+  .cart-row { padding:14px; display:grid; grid-template-columns:1fr auto; grid-template-areas:"info rm" "qty total"; row-gap:10px; column-gap:10px; }
+  .item-info { grid-area:info; } .qty-ctrl { grid-area:qty; justify-self:start; }
+  .item-total { grid-area:total; justify-self:end; min-width:0; font-size:17px; }
+  .btn-rm { grid-area:rm; justify-self:end; } .item-name { white-space:normal; }
+  .addr-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
-
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="brand" href="/">Smart<span>Cart</span></a>
-  <div class="navbar-right">
-    <a class="btn-continue-nav" href="/users/dashboard/">🏠 Dashboard</a>
-    <a class="btn-continue-nav" href="/">← Continue Shopping</a>
+<nav class="nav">
+  <a href="/" class="nav-logo">S</a>
+  <a href="/" class="nav-name">Smart<em>Cart</em></a>
+  <button class="nav-menu-btn" id="menu-btn" type="button">Menu</button>
+  <div class="nav-end">
+    <a class="nb" href="/users/dashboard/">🏠 Dashboard</a>
+    <a class="nb" href="/">← Shop</a>
   </div>
 </nav>
 
-<!-- PAGE -->
 <div class="page">
-
   {% if messages %}
     {% for message in messages %}
-      <div class="flash-message {% if message.tags == 'error' %}flash-error{% else %}flash-success{% endif %}">
-        {{ message }}
-      </div>
+      <div class="flash {% if message.tags == 'error' %}flash-err{% else %}flash-ok{% endif %}">{{ message }}</div>
     {% endfor %}
   {% endif %}
 
-  <div class="page-header">
+  <div class="page-hdr">
     <h1 class="page-title">Your Cart</h1>
-    <p class="page-subtitle">
-      {% if cart_items %}{{ cart_items|length }} item{% if cart_items|length != 1 %}s{% endif %} ready to checkout{% else %}Your cart is empty{% endif %}
-    </p>
+    <p class="page-sub">{% if cart_items %}{{ cart_items|length }} item{% if cart_items|length != 1 %}s{% endif %} ready to checkout{% else %}Your cart is empty{% endif %}</p>
   </div>
 
   <div class="layout">
-
-    <!-- LEFT: ITEMS -->
+    <!-- ITEMS -->
     <div class="cart-list">
       {% if cart_items %}
         {% for item in cart_items %}
         <div class="cart-row">
           <div class="item-info">
             <div class="item-name">{{ item.product.name }}</div>
-            <div class="item-unit-price">₹{{ item.product.price }} each</div>
+            <div class="item-unit"><span class="rupee">&#8377;</span>{{ item.product.price }} each</div>
           </div>
-
-          <!-- Qty Controls -->
-          <div class="qty-control">
+          <div class="qty-ctrl">
             <a class="qty-btn minus" href="/cart/decrease/{{ item.id }}/">−</a>
             <span class="qty-val">{{ item.quantity }}</span>
             <a class="qty-btn plus" href="/cart/increase/{{ item.id }}/">+</a>
           </div>
-
-          <!-- Row Total -->
-          <div class="item-total">₹{{ item.row_total }}</div>
-
-          <!-- Remove -->
-          <a class="btn-remove" href="/cart/remove/{{ item.id }}/" title="Remove">✕</a>
+          <div class="item-total"><span class="rupee">&#8377;</span>{{ item.row_total }}</div>
+          <a class="btn-rm" href="/cart/remove/{{ item.id }}/" title="Remove">✕</a>
         </div>
         {% endfor %}
-
       {% else %}
         <div class="empty-cart">
-          <div class="empty-icon">🛒</div>
+          <div class="empty-ico">🛒</div>
           <h3>Nothing here yet</h3>
-          <p>Add some products to get started.</p>
+          <p>Browse our collection and add items to your cart.</p>
+          <a class="cta" href="/">Continue Shopping →</a>
         </div>
       {% endif %}
     </div>
 
-    <!-- RIGHT: SUMMARY -->
-    <div class="summary-panel">
-      <div class="summary-title">Order Summary</div>
-
-      <div class="summary-line">
-        <span>Subtotal</span>
-        <span>₹{{ total }}</span>
-      </div>
-      <div class="summary-line">
-        <span>Delivery</span>
-        <span>Free</span>
-      </div>
-      <div class="summary-line">
-        <span>Taxes</span>
-        <span>Included</span>
+    <!-- SUMMARY -->
+    <div class="summary">
+      <div class="sum-title">Order Summary</div>
+      <div class="sum-line"><span>Subtotal</span><span><span class="rupee">&#8377;</span>{{ total }}</span></div>
+      <div class="sum-line"><span>Delivery</span><span>Free</span></div>
+      <div class="sum-line"><span>Taxes</span><span>Included</span></div>
+      <div class="sum-divider"></div>
+      <div class="sum-total">
+        <span class="sum-total-lbl">Total</span>
+        <span class="sum-total-val"><span class="rupee sym">&#8377;</span>{{ total }}</span>
       </div>
 
-      <div class="summary-divider"></div>
-
-      <div class="summary-total">
-        <span class="summary-total-label">Total</span>
-        <span class="summary-total-value"><span class="sym">₹</span>{{ total }}</span>
-      </div>
-
-      <form action="/orders/checkout/" method="post" class="checkout-form">
+      <form action="/orders/checkout/" method="post">
         {% csrf_token %}
-        <div class="payment-field">
-          <label class="payment-label">Delivery Address</label>
-          <div class="address-grid">
-            <input class="text-input full" type="text" name="shipping_name" placeholder="Full Name" required>
-            <input class="text-input full" type="tel" name="phone_number" placeholder="Phone Number" maxlength="15" required>
-            <input class="text-input full" type="text" name="address_line" placeholder="Flat / Area / Street Address" required>
-            <input class="text-input" type="text" name="city" placeholder="City" required>
-            <input class="text-input" type="text" name="state" placeholder="State" required>
-            <input class="text-input full" type="text" name="postal_code" placeholder="Pincode" maxlength="6" required>
+        <div style="margin-bottom:12px">
+          <span class="co-section-lbl">Delivery Address</span>
+          {% if saved_addresses %}
+            <p class="help-txt">Choose a saved address or edit fields below.</p>
+            <div class="saved-address-actions">
+              {% for addr in saved_addresses %}
+                {% if not addr.is_default %}
+                  <a href="/orders/address/default/{{ addr.id }}/">Set {{ addr.label }} Default</a>
+                {% endif %}
+                <a href="/orders/address/delete/{{ addr.id }}/">Delete {{ addr.label }}</a>
+              {% endfor %}
+            </div>
+            <select class="pay-select" id="saved-address-select">
+              <option value="">Use typed address</option>
+              {% for addr in saved_addresses %}
+                <option
+                  value="{{ addr.id }}"
+                  data-name="{{ addr.shipping_name|escapejs }}"
+                  data-phone="{{ addr.phone_number|escapejs }}"
+                  data-line="{{ addr.address_line|escapejs }}"
+                  data-city="{{ addr.city|escapejs }}"
+                  data-state="{{ addr.state|escapejs }}"
+                  data-pin="{{ addr.postal_code|escapejs }}"
+                  {% if default_address and default_address.id == addr.id %}selected{% endif %}
+                >{{ addr.label }} - {{ addr.address_line }}, {{ addr.city }}</option>
+              {% endfor %}
+            </select>
+          {% endif %}
+          <div class="addr-grid">
+            <input class="text-inp full" id="shipping_name" type="text" name="shipping_name" placeholder="Full Name" value="{% if default_address %}{{ default_address.shipping_name }}{% endif %}" required>
+            <input class="text-inp full" id="phone_number" type="tel" name="phone_number" placeholder="Phone Number" maxlength="15" value="{% if default_address %}{{ default_address.phone_number }}{% endif %}" required>
+            <input class="text-inp full" id="address_line" type="text" name="address_line" placeholder="Flat / Area / Street" value="{% if default_address %}{{ default_address.address_line }}{% endif %}" required>
+            <input class="text-inp" id="city" type="text" name="city" placeholder="City" value="{% if default_address %}{{ default_address.city }}{% endif %}" required>
+            <input class="text-inp" id="state" type="text" name="state" placeholder="State" value="{% if default_address %}{{ default_address.state }}{% endif %}" required>
+            <input class="text-inp full" id="postal_code" type="text" name="postal_code" placeholder="Pincode" maxlength="6" value="{% if default_address %}{{ default_address.postal_code }}{% endif %}" required>
+          </div>
+          <div class="save-opts">
+            <input class="text-inp full" type="text" name="address_label" placeholder="Address Label (Home / Work)" value="Home">
+            <label class="ck-row"><input type="checkbox" name="save_address" value="1" checked> Save this address to my address book</label>
+            <label class="ck-row"><input type="checkbox" name="set_default" value="1" {% if not default_address %}checked{% endif %}> Set as default address</label>
           </div>
         </div>
-        <div class="payment-field">
-          <label for="payment_method" class="payment-label">Payment Method</label>
-          <select id="payment_method" name="payment_method" class="payment-select">
+        <div style="margin-bottom:12px">
+          <span class="co-section-lbl">Coupon</span>
+          <input class="text-inp" type="text" name="coupon_code" placeholder="Use code e.g. SAVE10">
+        </div>
+        <div style="margin-bottom:12px">
+          <span class="co-section-lbl">Payment Method</span>
+          <select name="payment_method" class="pay-select">
             <option value="cod">Cash on Delivery</option>
             <option value="upi">UPI</option>
             <option value="card">Card</option>
@@ -584,16 +279,94 @@
         <button type="submit" class="btn-checkout">Proceed to Checkout →</button>
       </form>
       <a href="/" class="btn-continue">← Continue Shopping</a>
+      <div class="urgency">Popular items may sell out soon. Prices can change during peak demand.</div>
 
-      <div class="trust-badges">
-        <div class="badge-item"><span>🔒</span><span>Secure</span></div>
-        <div class="badge-item"><span>↩️</span><span>Returns</span></div>
-        <div class="badge-item"><span>🚚</span><span>Free Ship</span></div>
+      <div class="trust-row">
+        <div class="trust-item"><span>🔒</span><span>Secure</span></div>
+        <div class="trust-item"><span>↩️</span><span>Returns</span></div>
+        <div class="trust-item"><span>🚚</span><span>Free Ship</span></div>
       </div>
     </div>
-
   </div>
 </div>
+<div class="exit-pop" id="exit-pop">
+  <div class="exit-box">
+    <h3>Wait, before you go</h3>
+    <p>Use this quick code on checkout and save instantly.</p>
+    <div class="coupon-tag">SAVE10</div>
+    <div class="exit-actions">
+      <button class="keep" id="apply-save10">Apply SAVE10</button>
+      <button class="close" id="dismiss-exit">No Thanks</button>
+    </div>
+  </div>
+</div>
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="mobile-drawer" id="mobile-drawer">
+  <a href="/users/dashboard/">Dashboard</a>
+  <a href="/orders/">My Orders</a>
+  <a href="/wishlist/">Wishlist</a>
+  <a href="/cart/">Cart</a>
+  <a href="/users/logout/">Logout</a>
+</aside>
+<script>
+  (function () {
+    const select = document.getElementById('saved-address-select');
+    if (select) {
+      const fields = {
+        shipping_name: document.getElementById('shipping_name'),
+        phone_number: document.getElementById('phone_number'),
+        address_line: document.getElementById('address_line'),
+        city: document.getElementById('city'),
+        state: document.getElementById('state'),
+        postal_code: document.getElementById('postal_code')
+      };
 
+      function fillFromOption(option) {
+        fields.shipping_name.value = option.dataset.name || '';
+        fields.phone_number.value = option.dataset.phone || '';
+        fields.address_line.value = option.dataset.line || '';
+        fields.city.value = option.dataset.city || '';
+        fields.state.value = option.dataset.state || '';
+        fields.postal_code.value = option.dataset.pin || '';
+      }
+
+      select.addEventListener('change', function () {
+        if (!select.value) return;
+        fillFromOption(select.options[select.selectedIndex]);
+      });
+    }
+
+    var pop = document.getElementById('exit-pop');
+    var couponInput = document.querySelector('input[name="coupon_code"]');
+    var armed = true;
+    document.addEventListener('mouseout', function (e) {
+      if (!armed) return;
+      if (e.clientY <= 0) {
+        pop.classList.add('show');
+        armed = false;
+      }
+    });
+    document.getElementById('dismiss-exit').addEventListener('click', function () {
+      pop.classList.remove('show');
+    });
+    document.getElementById('apply-save10').addEventListener('click', function () {
+      if (couponInput) couponInput.value = 'SAVE10';
+      pop.classList.remove('show');
+    });
+
+    var menuBtn = document.getElementById('menu-btn');
+    var drawer = document.getElementById('mobile-drawer');
+    var overlay = document.getElementById('drawer-overlay');
+    function closeDrawer() {
+      drawer.classList.remove('show');
+      overlay.classList.remove('show');
+    }
+    menuBtn.addEventListener('click', function () {
+      drawer.classList.add('show');
+      overlay.classList.add('show');
+    });
+    overlay.addEventListener('click', closeDrawer);
+  })();
+</script>
 </body>
 </html>

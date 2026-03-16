@@ -1,451 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<title>Sign In — SmartCart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#12121a; --brand:#2563eb; --brand-h:#1d4ed8;
+  --brand-dim:rgba(37,99,235,0.09); --surface:#fff; --bg:#f4f5f9; --bg2:#eef0f6;
+  --muted:#7e7e9a; --muted2:#b0b0c8; --border:#e2e4ee; --border2:#ececf4;
+  --red:#dc2626; --red-d:rgba(220,38,38,0.09);
+  --font-d:'Playfair Display',Georgia,serif; --font-b:'Outfit',system-ui,sans-serif;
+  --sb:0 6px 22px rgba(37,99,235,0.28);
+}
+body {
+  min-height: 100vh; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-b); padding: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 60% 55% at 15% 25%, rgba(37,99,235,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 60% at 85% 75%, rgba(37,99,235,0.05) 0%, transparent 65%);
+  pointer-events:none;
+}
 
-  body, body * { font-family: 'Roboto', sans-serif; }
+/* SPLASH */
+#splash {
+  position:fixed; inset:0; z-index:9999;
+  background: linear-gradient(135deg,#1a3a8f 0%,#2563eb 60%,#3b82f6 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  transition: opacity 0.4s, visibility 0.4s;
+}
+#splash.gone { opacity:0; visibility:hidden; pointer-events:none; }
+.spl-icon {
+  width:64px; height:64px; border-radius:18px;
+  background:rgba(255,255,255,0.16); backdrop-filter:blur(8px);
+  display:grid; place-items:center;
+  font-family:var(--font-d); font-size:26px; font-weight:700; color:#fff;
+  box-shadow:0 12px 36px rgba(0,0,0,0.22);
+  animation: popIn 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.spl-text { color:#fff; font-family:var(--font-d); font-size:20px; font-weight:600; }
+.spl-bar { width:120px; height:3px; border-radius:99px; background:rgba(255,255,255,0.25); overflow:hidden; }
+.spl-fill { height:100%; width:0; background:#fff; animation:fillBar 0.9s ease forwards 0.2s; }
+@keyframes fillBar { to { width:100%; } }
+@keyframes popIn { from{opacity:0;transform:scale(0.6);} to{opacity:1;transform:scale(1);} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
 
-  body { font-weight: 400; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
-  button, [class*="btn-"] { font-weight: 500; }
+.wrap {
+  position:relative; z-index:1;
+  width:100%; max-width:440px;
+  display:flex; flex-direction:column; gap:0;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
 
-  :root {
-    --ink: #0d0d14;
-    --indigo: #4338f7;
-    --indigo-light: #6d63ff;
-    --indigo-dim: rgba(67,56,247,0.08);
-    --surface: #ffffff;
-    --bg: #f5f5f8;
-    --muted: #8a8a99;
-    --border: #e8e8ef;
-  }
+/* Brand header above card */
+.brand-top {
+  text-align:center; margin-bottom:28px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.06s both;
+}
+.brand-ico {
+  width:52px; height:52px; border-radius:16px; background:var(--brand);
+  display:inline-grid; place-items:center;
+  font-family:var(--font-d); font-size:22px; font-weight:700; color:#fff;
+  box-shadow:var(--sb); margin-bottom:12px;
+}
+.brand-name { font-family:var(--font-d); font-size:26px; font-weight:700; color:var(--ink); }
+.brand-name em { font-style:normal; color:var(--brand); }
+.brand-tagline { font-size:13px; color:var(--muted); margin-top:4px; }
 
-  body {
-    min-height: 100vh;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
+/* Card */
+.card {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:20px; padding:36px 40px 32px;
+  box-shadow: 0 8px 48px rgba(10,10,18,0.09), 0 2px 8px rgba(10,10,18,0.04);
+}
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 20% 30%, rgba(67,56,247,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 70% at 80% 70%, rgba(67,56,247,0.04) 0%, transparent 60%);
-    pointer-events: none;
-  }
+.card-hdr { margin-bottom:28px; }
+.card-title { font-family:var(--font-d); font-size:22px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+.card-sub { font-size:13px; color:var(--muted); }
 
-  .card {
-    position: relative; z-index: 1;
-    width: 420px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 48px 44px 40px;
-    box-shadow: 0 8px 48px rgba(13,13,20,0.08), 0 2px 8px rgba(13,13,20,0.04);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-  }
+/* Error */
+.err-box {
+  background:var(--red-d); border:1px solid rgba(220,38,38,0.18);
+  border-radius:10px; padding:11px 14px;
+  font-size:13px; color:var(--red); font-weight:500; margin-bottom:18px;
+  display:none;
+}
+.err-box.show { display:block; }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* Fields */
+.field { margin-bottom:16px; }
+.field-label { display:block; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.pw-wrap { position:relative; }
+.field-input {
+  width:100%; background:var(--bg2); border:1.5px solid var(--border);
+  border-radius:11px; padding:11px 14px; font-family:var(--font-b);
+  font-size:14px; color:var(--ink); outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field-input::placeholder { color:var(--muted2); }
+.field-input:focus { border-color:var(--brand); background:var(--surface); box-shadow:0 0 0 3px var(--brand-dim); }
+.toggle-pw {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  border:none; background:transparent; color:var(--muted); font-size:12px;
+  font-weight:600; cursor:pointer; padding:6px 8px; border-radius:6px;
+  transition:color 0.18s, background 0.18s; font-family:var(--font-b);
+}
+.toggle-pw:hover { color:var(--brand); background:var(--brand-dim); }
+.caps-hint { margin-top:5px; font-size:11.5px; color:var(--red); display:none; }
 
-  .header { text-align: center; margin-bottom: 36px; }
+.btn-submit {
+  width:100%; margin-top:4px; padding:13px;
+  background:var(--brand); border:none; border-radius:11px;
+  font-family:var(--font-d); font-size:15px; font-weight:600; letter-spacing:-0.01em;
+  color:#fff; cursor:pointer;
+  transition:background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow:var(--sb);
+}
+.btn-submit:hover { background:var(--brand-h); transform:translateY(-1px); box-shadow:0 10px 28px rgba(37,99,235,0.38); }
+.btn-submit:active { transform:translateY(0); }
+.btn-submit:disabled { opacity:0.75; cursor:not-allowed; transform:none; }
 
-  .logo-mark {
-    width: 52px; height: 52px;
-    background: var(--indigo);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 22px; font-weight: 800; color: #fff;
-    letter-spacing: -0.03em;
-    box-shadow: 0 6px 20px rgba(67,56,247,0.3);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both;
-  }
+.divider { display:flex; align-items:center; gap:12px; margin:20px 0 16px; }
+.div-line { flex:1; height:1px; background:var(--border2); }
+.div-txt { font-size:11px; color:var(--muted2); }
 
-  h1 {
-    font-size: 24px; font-weight: 700;
-    letter-spacing: -0.02em; color: var(--ink);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.12s both;
-  }
+.link-row { text-align:center; font-size:13px; color:var(--muted); }
+.link-row a { color:var(--brand); font-weight:600; text-decoration:none; transition:color 0.18s; }
+.link-row a:hover { color:var(--brand-h); }
 
-  .subtitle {
-    font-size: 13px; font-weight: 400;
-    color: var(--muted); margin-top: 5px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.16s both;
-  }
-
-  .field {
-    margin-bottom: 18px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  .field:nth-child(1) { animation-delay: 0.2s; }
-  .field:nth-child(2) { animation-delay: 0.26s; }
-
-  label {
-    display: block;
-    font-size: 12px; font-weight: 600;
-    color: var(--ink); margin-bottom: 7px;
-    letter-spacing: -0.01em;
-  }
-
-  input {
-    width: 100%;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-family: inherit;
-    font-size: 14px; font-weight: 400;
-    color: var(--ink); outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  }
-
-  input::placeholder { color: var(--muted); }
-
-  input:focus {
-    border-color: var(--indigo);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(67,56,247,0.1);
-  }
-
-  .btn-login {
-    width: 100%; margin-top: 6px;
-    padding: 13px;
-    background: var(--indigo);
-    border: none; border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px; font-weight: 600;
-    letter-spacing: -0.01em;
-    color: #fff; cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.34s both;
-  }
-
-  .btn-login:hover {
-    background: var(--indigo-light);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 28px rgba(67,56,247,0.35);
-  }
-  .btn-login:active { transform: translateY(0); }
-
-  .divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 22px 0 16px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.38s both;
-  }
-  .divider-line { flex: 1; height: 1px; background: var(--border); }
-  .divider span { font-size: 12px; color: var(--muted); }
-
-  .forgot {
-    text-align: center;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.42s both;
-  }
-  .forgot a {
-    font-size: 13px; font-weight: 500;
-    color: var(--indigo); text-decoration: none;
-    transition: color 0.18s;
-  }
-  .forgot a:hover { color: var(--indigo-light); }
-
-  /* ── REGISTER LINE ── */
-  .register {
-    text-align: center; margin-top: 14px;
-    font-size: 13px; color: var(--muted);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.46s both;
-  }
-  .register a {
-    font-weight: 600; color: var(--indigo);
-    text-decoration: none; transition: color 0.18s;
-  }
-  .register a:hover { color: var(--indigo-light); }
-
-  .brand-footer {
-    text-align: center; margin-top: 28px;
-    padding-top: 20px; border-top: 1px solid var(--border);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;
-  }
-  .brand-name {
-    font-size: 15px; font-weight: 800;
-    letter-spacing: -0.02em; color: var(--ink);
-    text-decoration: none;
-  }
-  .brand-name span { color: var(--indigo); }
-
-  .error-box {
-    margin-bottom: 14px;
-    background: #fff1f2;
-    border: 1px solid #fecdd3;
-    color: #9f1239;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .password-wrap {
-    position: relative;
-  }
-
-  .toggle-pass {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 6px;
-  }
-
-  .toggle-pass:hover {
-    color: var(--indigo);
-    background: var(--indigo-dim);
-  }
-
-  .caps-hint {
-    margin-top: 6px;
-    font-size: 12px;
-    color: #b91c1c;
-    display: none;
-  }
-
-  #splash {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: linear-gradient(130deg, #3328db 0%, #5e54ff 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    transition: opacity 0.45s ease, visibility 0.45s ease;
-  }
-
-  #splash.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .splash-logo {
-    width: 72px;
-    height: 72px;
-    border-radius: 22px;
-    background: rgba(255,255,255,0.16);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 38px;
-    font-weight: 800;
-    box-shadow: 0 12px 34px rgba(13,13,20,0.24);
-    animation: splashPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
-  }
-
-  .splash-text {
-    color: #fff;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .splash-track {
-    width: 130px;
-    height: 3px;
-    border-radius: 999px;
-    overflow: hidden;
-    background: rgba(255,255,255,0.25);
-  }
-
-  .splash-fill {
-    height: 100%;
-    width: 0;
-    background: #fff;
-    animation: fillSplash 1s ease forwards;
-  }
-
-  @keyframes splashPop {
-    from { opacity: 0; transform: scale(0.7); }
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  @keyframes fillSplash {
-    from { width: 0; }
-    to { width: 100%; }
-  }
+.card-footer { text-align:center; margin-top:24px; padding-top:20px; border-top:1px solid var(--border2); }
+.card-footer a { font-family:var(--font-d); font-size:14px; font-weight:700; color:var(--ink); text-decoration:none; }
+.card-footer a em { font-style:normal; color:var(--brand); }
 </style>
 </head>
-
 <body>
-  <div id="splash">
-    <div class="splash-logo">S</div>
-    <div class="splash-text">SmartCart</div>
-    <div class="splash-track"><div class="splash-fill"></div></div>
+
+<div id="splash">
+  <div class="spl-icon">S</div>
+  <div class="spl-text">SmartCart</div>
+  <div class="spl-bar"><div class="spl-fill"></div></div>
+</div>
+
+<div class="wrap">
+  <div class="brand-top">
+    <div class="brand-ico">S</div>
+    <div class="brand-name">Smart<em>Cart</em></div>
+    <div class="brand-tagline">Your smart shopping companion</div>
   </div>
 
   <div class="card">
-
-    <div class="header">
-      <div class="logo-mark">S</div>
-      <h1>Welcome Back</h1>
-      <p class="subtitle">Sign in to your account</p>
+    <div class="card-hdr">
+      <h1 class="card-title">Welcome back</h1>
+      <p class="card-sub">Sign in to your account to continue</p>
     </div>
 
     <form id="loginForm" method="POST">
       {% csrf_token %}
-
-      <div id="loginError" class="error-box" {% if not error %}style="display:none"{% endif %}>{{ error }}</div>
+      <div id="loginError" class="err-box {% if error %}show{% endif %}">{{ error }}</div>
 
       <div class="field">
-        <label for="username">Username</label>
-        <input id="username" type="text" name="username"
+        <label class="field-label" for="username">Username</label>
+        <input id="username" class="field-input" type="text" name="username"
           placeholder="Enter your username" autocomplete="username" value="{{ username_value }}">
       </div>
 
       <div class="field">
-        <label for="password">Password</label>
-        <div class="password-wrap">
-          <input id="password" type="password" name="password"
-            placeholder="••••••••" autocomplete="current-password">
-          <button type="button" class="toggle-pass" data-target="password">Show</button>
+        <label class="field-label" for="password">Password</label>
+        <div class="pw-wrap">
+          <input id="password" class="field-input" type="password" name="password"
+            placeholder="••••••••" autocomplete="current-password" style="padding-right:70px">
+          <button type="button" class="toggle-pw" data-target="password">Show</button>
         </div>
-        <div id="capsHintLogin" class="caps-hint">Caps Lock is ON</div>
+        <div id="capsHint" class="caps-hint">⚠ Caps Lock is on</div>
       </div>
 
-      <button type="submit" class="btn-login">Sign In</button>
+      <button type="submit" class="btn-submit">Sign In</button>
     </form>
 
-    <div class="divider">
-      <div class="divider-line"></div>
-      <span>or</span>
-      <div class="divider-line"></div>
-    </div>
+    <div class="divider"><div class="div-line"></div><span class="div-txt">or</span><div class="div-line"></div></div>
+    <div class="link-row" style="margin-bottom:10px"><a href="/password-reset/">Forgot your password?</a></div>
+    <div class="link-row">Don't have an account? <a href="/users/register/">Create one →</a></div>
 
-    <div class="forgot">
-      <a href="/password-reset/">Forgot your password?</a>
+    <div class="card-footer">
+      <a href="/">Smart<em>Cart</em></a>
     </div>
-
-    <div class="register">
-      Don't have an account? <a href="/users/register/">Register</a>
-    </div>
-
-    <div class="brand-footer">
-      <a href="/" class="brand-name">Smart<span>Cart</span></a>
-    </div>
-
   </div>
+</div>
 
-  <script>
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        var splash = document.getElementById('splash');
-        if (splash) splash.classList.add('hidden');
-      }, 1500);
+<script>
+window.addEventListener('load', function() {
+  setTimeout(function() { var s = document.getElementById('splash'); if(s) s.classList.add('gone'); }, 1500); });
+
+(function(){
+  var form = document.getElementById('loginForm');
+  var errBox = document.getElementById('loginError');
+  var pwInput = document.getElementById('password');
+  var capsHint = document.getElementById('capsHint');
+
+  document.querySelectorAll('.toggle-pw').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var inp = document.getElementById(btn.dataset.target);
+      var isPw = inp.type === 'password';
+      inp.type = isPw ? 'text' : 'password';
+      btn.textContent = isPw ? 'Hide' : 'Show';
     });
+  });
 
-    (function () {
-      var form = document.getElementById('loginForm');
-      var errorBox = document.getElementById('loginError');
-      var passwordInput = document.getElementById('password');
-      var capsHint = document.getElementById('capsHintLogin');
+  if(pwInput && capsHint) {
+    var checkCaps = function(e) { capsHint.style.display = (e.getModifierState && e.getModifierState('CapsLock')) ? 'block' : 'none'; };
+    pwInput.addEventListener('keydown', checkCaps);
+    pwInput.addEventListener('keyup', checkCaps);
+    pwInput.addEventListener('blur', function() { capsHint.style.display = 'none'; });
+  }
 
-      if (!form || !errorBox) {
-        return;
-      }
-
-      var toggleButtons = document.querySelectorAll('.toggle-pass');
-      toggleButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          var targetId = button.getAttribute('data-target');
-          var input = document.getElementById(targetId);
-          if (!input) {
-            return;
-          }
-          var isPassword = input.getAttribute('type') === 'password';
-          input.setAttribute('type', isPassword ? 'text' : 'password');
-          button.textContent = isPassword ? 'Hide' : 'Show';
-        });
-      });
-
-      if (passwordInput && capsHint) {
-        var updateCapsHint = function (event) {
-          var on = event.getModifierState && event.getModifierState('CapsLock');
-          capsHint.style.display = on ? 'block' : 'none';
-        };
-
-        passwordInput.addEventListener('keydown', updateCapsHint);
-        passwordInput.addEventListener('keyup', updateCapsHint);
-        passwordInput.addEventListener('blur', function () {
-          capsHint.style.display = 'none';
-        });
-      }
-
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        var submitButton = form.querySelector('button[type="submit"]');
-        var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
-        var formData = new FormData(form);
-
-        errorBox.style.display = 'none';
-        errorBox.textContent = '';
-
-        if (submitButton) {
-          submitButton.disabled = true;
-          submitButton.textContent = 'Checking...';
-        }
-
-        fetch(form.action || window.location.href, {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfInput ? csrfInput.value : ''
-          },
-          body: formData,
-          credentials: 'same-origin'
-        })
-          .then(function (response) {
-            return response.json().then(function (payload) {
-              return { ok: response.ok, payload: payload };
-            });
-          })
-          .then(function (result) {
-            if (result.ok && result.payload.ok) {
-              window.location.href = result.payload.redirect_url || '/users/dashboard/';
-              return;
-            }
-
-            errorBox.textContent = result.payload.error || 'Unable to login right now.';
-            errorBox.style.display = 'block';
-          })
-          .catch(function () {
-            errorBox.textContent = 'Network error. Please try again.';
-            errorBox.style.display = 'block';
-          })
-          .finally(function () {
-            if (submitButton) {
-              submitButton.disabled = false;
-              submitButton.textContent = 'Sign In';
-            }
-          });
-      });
-    })();
-  </script>
+  if(form && errBox) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = form.querySelector('button[type="submit"]');
+      var csrf = form.querySelector('[name="csrfmiddlewaretoken"]');
+      errBox.classList.remove('show'); errBox.textContent = '';
+      if(btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+      fetch(form.action || window.location.href, {
+        method:'POST',
+        headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':csrf ? csrf.value : ''},
+        body: new FormData(form), credentials:'same-origin'
+      })
+      .then(function(r) { return r.json().then(function(d) { return {ok:r.ok,d:d}; }); })
+      .then(function(res) {
+        if(res.ok && res.d.ok) { window.location.href = res.d.redirect_url || '/users/dashboard/'; return; }
+        errBox.textContent = res.d.error || 'Unable to sign in. Please try again.';
+        errBox.classList.add('show');
+      })
+      .catch(function() { errBox.textContent = 'Network error. Please try again.'; errBox.classList.add('show'); })
+      .finally(function() { if(btn) { btn.disabled = false; btn.textContent = 'Sign In'; } });
+    });
+  }
+})();
+</script>
 </body>
 </html>

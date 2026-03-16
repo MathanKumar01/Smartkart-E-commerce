@@ -1,384 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Your Wishlist — SmartCart</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wishlist — SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#12121a; --brand:#2563eb; --brand-h:#1d4ed8; --brand-dim:rgba(37,99,235,0.09);
+  --surface:#fff; --glass:rgba(255,255,255,0.86); --bg:#f4f5f9; --bg2:#eef0f6;
+  --muted:#7e7e9a; --muted2:#b0b0c8; --border:#e2e4ee; --border2:#ececf4;
+  --rose:#e11d48; --rose-d:rgba(225,29,72,0.09); --rose-b:rgba(225,29,72,0.2);
+  --green:#059669; --green-d:rgba(5,150,105,0.10);
+  --font-d:'Playfair Display',Georgia,serif; --font-b:'Outfit',system-ui,sans-serif;
+  --sb:0 6px 22px rgba(37,99,235,0.28); --s1:0 2px 10px rgba(10,10,18,0.06); --s2:0 8px 28px rgba(10,10,18,0.10);
+}
+html{font-size:16px;} body{font-family:var(--font-b);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes heartbeat{0%,100%{transform:scale(1);}14%{transform:scale(1.2);}28%{transform:scale(1);}42%{transform:scale(1.13);}56%{transform:scale(1);}}
 
-  :root {
-    --ink: #0d0d14;
-    --indigo: #4338f7;
-    --indigo-light: #6d63ff;
-    --indigo-dim: rgba(67,56,247,0.08);
-    --surface: #ffffff;
-    --bg: #f5f5f8;
-    --muted: #8a8a99;
-    --border: #e8e8ef;
-    --rose: #f43f5e;
-    --rose-dim: rgba(244,63,94,0.08);
-    --rose-border: rgba(244,63,94,0.2);
-  }
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;gap:16px;padding:0 clamp(16px,4vw,56px);background:var(--glass);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);}
+.nav-brand{text-decoration:none;display:flex;align-items:center;gap:9px;}
+.nav-logo{width:32px;height:32px;border-radius:9px;background:var(--brand);display:grid;place-items:center;font-family:var(--font-d);font-size:15px;font-weight:700;color:#fff;box-shadow:var(--sb);}
+.nav-name{font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--ink);}
+.nav-name em{font-style:normal;color:var(--brand);}
+.nav-menu-btn{display:none;border:1.5px solid var(--border);background:#fff;border-radius:9px;padding:6px 10px;font-size:13px;color:var(--ink);}
+.search-box{flex:1;max-width:460px;display:flex;align-items:center;background:var(--bg2);border:1.5px solid var(--border);border-radius:11px;padding:0 6px 0 14px;transition:border-color 0.2s,box-shadow 0.2s;}
+.search-box:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-dim);background:var(--surface);}
+.search-box input{flex:1;border:none;background:transparent;outline:none;font-family:var(--font-b);font-size:13.5px;color:var(--ink);padding:9px 0;}
+.search-box input::placeholder{color:var(--muted2);}
+.search-box button{background:var(--brand);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:600;font-family:var(--font-b);cursor:pointer;transition:background 0.18s;}
+.search-box button:hover{background:var(--brand-h);}
+.nav-end{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.hi{font-size:13px;color:var(--muted);padding:0 4px;} .hi strong{color:var(--ink);font-weight:600;}
+.nb{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:7px 13px;border-radius:8px;text-decoration:none;color:var(--muted);border:none;background:transparent;transition:background 0.18s,color 0.18s;}
+.nb:hover{background:var(--brand-dim);color:var(--brand);}
+.nb.outlined{border:1.5px solid var(--border);color:var(--ink);}
+.nb.outlined:hover{border-color:var(--brand);background:var(--brand-dim);color:var(--brand);}
 
-  html { font-size: 16px; }
-  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+/* PAGE */
+.page{max-width:860px;margin:0 auto;padding:44px clamp(16px,4vw,56px) 80px;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;}
+.hdr-l{display:flex;flex-direction:column;gap:3px;}
+.page-title{font-family:var(--font-d);font-weight:700;font-size:28px;color:var(--ink);display:flex;align-items:center;gap:10px;}
+.heart-ico{color:var(--rose);animation:heartbeat 2.4s ease-in-out infinite;}
+.page-sub{font-size:13px;color:var(--muted);}
+.btn-browse-sm{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;padding:9px 16px;border-radius:9px;text-decoration:none;color:var(--brand);border:1.5px solid rgba(37,99,235,0.22);background:var(--brand-dim);transition:background 0.18s,border-color 0.18s,transform 0.15s;}
+.btn-browse-sm:hover{background:rgba(37,99,235,0.15);border-color:var(--brand);transform:translateY(-1px);}
 
-  /* ── NAVBAR ── */
-  .navbar {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 clamp(16px, 4vw, 48px);
-    height: 68px;
-    display: flex; align-items: center; gap: 24px;
-  }
-  .brand {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 22px;
-    color: var(--ink); text-decoration: none;
-    letter-spacing: -0.03em; white-space: nowrap;
-  }
-  .brand span { color: var(--indigo); }
+/* WISHLIST */
+.wishlist{display:flex;flex-direction:column;gap:12px;}
+.wish-card{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:18px;box-shadow:var(--s1);transition:box-shadow 0.25s,border-color 0.25s,transform 0.25s;position:relative;overflow:hidden;animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;}
+.wish-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--rose) 0%,transparent 100%);opacity:0;transition:opacity 0.25s;}
+.wish-card:hover{box-shadow:var(--s2);border-color:var(--rose-b);transform:translateY(-2px);}
+.wish-card:hover::before{opacity:1;}
+.wish-card:nth-child(1){animation-delay:0.05s} .wish-card:nth-child(2){animation-delay:0.10s}
+.wish-card:nth-child(3){animation-delay:0.15s} .wish-card:nth-child(4){animation-delay:0.20s}
 
-  .search-wrap {
-    flex: 1; max-width: 520px;
-    display: flex; align-items: center;
-    background: var(--bg); border: 1.5px solid var(--border);
-    border-radius: 10px; padding: 0 6px 0 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .search-wrap:focus-within {
-    border-color: var(--indigo);
-    box-shadow: 0 0 0 3px rgba(67,56,247,0.1);
-  }
-  .search-wrap input {
-    flex: 1; border: none; background: transparent; outline: none;
-    font-family: 'DM Sans', sans-serif; font-size: 14px;
-    color: var(--ink); padding: 10px 0;
-  }
-  .search-wrap input::placeholder { color: var(--muted); }
-  .search-wrap button {
-    background: var(--indigo); color: #fff;
-    border: none; border-radius: 7px;
-    padding: 7px 16px; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .search-wrap button:hover { background: var(--indigo-light); }
+.wish-heart{width:44px;height:44px;flex-shrink:0;background:var(--rose-d);border:1px solid var(--rose-b);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--rose);transition:transform 0.2s;}
+.wish-card:hover .wish-heart{transform:scale(1.1);}
 
-  .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-  .nav-greeting { font-size: 13px; color: var(--muted); padding: 0 8px; }
-  .nav-greeting strong { color: var(--ink); font-weight: 500; }
-  .nav-link {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 500; padding: 8px 14px;
-    border-radius: 8px; text-decoration: none;
-    color: var(--ink); transition: background 0.18s, color 0.18s;
-  }
-  .nav-link:hover { background: var(--indigo-dim); color: var(--indigo); }
-  .nav-link.accent { background: var(--indigo); color: #fff; }
-  .nav-link.accent:hover { background: var(--indigo-light); color: #fff; }
-  .cart-link {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 13px; font-weight: 500; padding: 8px 16px;
-    border-radius: 8px; text-decoration: none; color: var(--ink);
-    border: 1.5px solid var(--border);
-    transition: border-color 0.2s, background 0.2s, color 0.2s;
-  }
-  .cart-link:hover { border-color: var(--indigo); background: var(--indigo-dim); color: var(--indigo); }
+.wish-info{flex:1;min-width:0;}
+.wish-name{font-family:var(--font-d);font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wish-name a{color:inherit;text-decoration:none;transition:color 0.18s;}
+.wish-name a:hover{color:var(--brand);}
+.wish-meta{display:flex;align-items:center;gap:10px;margin-top:4px;}
+.wish-price{font-family:var(--font-d);font-size:17px;font-weight:700;letter-spacing:-0.02em;}
+.wish-price .sym{font-family:var(--font-b);font-size:12px;font-weight:500;color:var(--muted);}
+.stock-badge{font-size:10.5px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--green);background:var(--green-d);padding:2px 8px;border-radius:5px;}
 
-  /* ── PAGE ── */
-  .page { max-width: 860px; margin: 0 auto; padding: 48px clamp(16px, 4vw, 48px) 80px; }
+.wish-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.btn-add-cart{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:var(--font-b);transition:background 0.2s,transform 0.15s,box-shadow 0.2s;box-shadow:0 3px 12px rgba(37,99,235,0.22);white-space:nowrap;}
+.btn-add-cart:hover{background:var(--brand-h);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,0.32);color:#fff;}
+.btn-rm{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted2);font-size:13px;cursor:pointer;text-decoration:none;transition:all 0.18s;flex-shrink:0;}
+.btn-rm:hover{background:var(--rose-d);color:var(--rose);border-color:var(--rose-b);}
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* FOOTER */
+.wl-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.wl-footer-note{font-size:13px;color:var(--muted);}
+.wl-footer-note strong{color:var(--ink);}
 
-  /* ── PAGE HEADER ── */
-  .page-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 36px;
-    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  .header-left { display: flex; flex-direction: column; gap: 4px; }
-  .page-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 30px; letter-spacing: -0.03em;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .heart-icon {
-    color: var(--rose); font-size: 26px;
-    animation: heartbeat 2.4s ease-in-out infinite;
-  }
-  @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    14%       { transform: scale(1.18); }
-    28%       { transform: scale(1); }
-    42%       { transform: scale(1.12); }
-    56%       { transform: scale(1); }
-  }
-  .page-subtitle { font-size: 13px; color: var(--muted); }
+/* EMPTY */
+.empty{text-align:center;padding:76px 0;animation:fadeUp 0.5s ease 0.05s both;}
+.empty-ico{font-size:56px;margin-bottom:18px;}
+.empty h3{font-family:var(--font-d);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:8px;}
+.empty p{font-size:13.5px;color:var(--muted);margin-bottom:26px;}
+.btn-browse-big{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:14px 26px;font-size:14px;font-weight:700;font-family:var(--font-d);cursor:pointer;text-decoration:none;transition:background 0.2s,transform 0.15s;box-shadow:var(--sb);}
+.btn-browse-big:hover{background:var(--brand-h);transform:translateY(-2px);color:#fff;}
 
-  .btn-shop {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 13px; font-weight: 500; padding: 10px 18px;
-    border-radius: 10px; text-decoration: none; color: var(--indigo);
-    border: 1.5px solid rgba(67,56,247,0.25);
-    background: var(--indigo-dim);
-    transition: background 0.18s, border-color 0.18s, transform 0.15s;
-  }
-  .btn-shop:hover { background: rgba(67,56,247,0.14); border-color: var(--indigo); transform: translateY(-1px); }
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(7,10,23,0.55);z-index:300;}
+.drawer-overlay.show{display:block;}
+.mobile-drawer{position:fixed;top:0;right:-280px;width:260px;height:100vh;background:#fff;z-index:301;border-left:1px solid var(--border2);padding:16px;transition:right .2s ease;display:flex;flex-direction:column;gap:10px;}
+.mobile-drawer.show{right:0;}
+.mobile-drawer a{text-decoration:none;color:var(--ink);padding:10px 12px;border-radius:9px;background:var(--bg2);}
 
-  /* ── WISHLIST ITEMS ── */
-  .wishlist { display: flex; flex-direction: column; gap: 14px; }
-
-  .wish-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    display: flex; align-items: center; gap: 20px;
-    transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
-    position: relative; overflow: hidden;
-  }
-  .wish-card::before {
-    content: '';
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, var(--rose) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .wish-card:hover {
-    box-shadow: 0 8px 32px rgba(13,13,20,0.08);
-    border-color: var(--rose-border);
-    transform: translateY(-2px);
-  }
-  .wish-card:hover::before { opacity: 1; }
-
-  .wish-card:nth-child(1) { animation-delay: 0.06s; }
-  .wish-card:nth-child(2) { animation-delay: 0.12s; }
-  .wish-card:nth-child(3) { animation-delay: 0.18s; }
-  .wish-card:nth-child(4) { animation-delay: 0.24s; }
-  .wish-card:nth-child(5) { animation-delay: 0.30s; }
-  .wish-card:nth-child(6) { animation-delay: 0.36s; }
-
-  /* Heart badge */
-  .wish-heart {
-    width: 44px; height: 44px; flex-shrink: 0;
-    background: var(--rose-dim);
-    border: 1px solid var(--rose-border);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    transition: transform 0.2s;
-  }
-  .wish-card:hover .wish-heart { transform: scale(1.1); }
-
-  /* Item info */
-  .wish-info { flex: 1; min-width: 0; }
-  .wish-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
-    color: var(--ink);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .wish-name a {
-    color: inherit; text-decoration: none;
-    transition: color 0.18s;
-  }
-  .wish-name a:hover { color: var(--indigo); }
-
-  .wish-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-  .wish-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 17px; font-weight: 700;
-    letter-spacing: -0.02em; color: var(--ink);
-  }
-  .wish-price-sym { font-size: 13px; font-weight: 500; color: var(--muted); }
-  .wish-stock {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
-    text-transform: uppercase; color: #00b07a;
-    background: rgba(0,176,122,0.1);
-    padding: 3px 8px; border-radius: 5px;
-  }
-
-  /* Actions */
-  .wish-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-
-  .btn-add {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: var(--indigo); color: #fff;
-    border: none; border-radius: 10px;
-    padding: 10px 18px; font-size: 13px; font-weight: 500;
-    cursor: pointer; text-decoration: none;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 3px 12px rgba(67,56,247,0.2);
-    white-space: nowrap;
-  }
-  .btn-add:hover {
-    background: var(--indigo-light); transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(67,56,247,0.32); color: #fff;
-  }
-  .btn-add:active { transform: translateY(0); }
-
-  .btn-remove {
-    display: flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; border-radius: 9px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-size: 15px;
-    cursor: pointer; text-decoration: none;
-    transition: background 0.18s, color 0.18s, border-color 0.18s;
-    flex-shrink: 0;
-  }
-  .btn-remove:hover {
-    background: var(--rose-dim); color: var(--rose);
-    border-color: var(--rose-border);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty {
-    text-align: center; padding: 80px 0;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.05s both;
-  }
-  .empty-icon { font-size: 56px; margin-bottom: 20px; line-height: 1; }
-  .empty h3 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700; font-size: 22px; letter-spacing: -0.02em;
-    color: var(--ink); margin-bottom: 8px;
-  }
-  .empty p { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-  .btn-browse {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--indigo); color: #fff;
-    border: none; border-radius: 12px;
-    padding: 14px 28px; font-size: 14px; font-weight: 600;
-    font-family: 'Syne', sans-serif;
-    cursor: pointer; text-decoration: none;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
-  }
-  .btn-browse:hover {
-    background: var(--indigo-light); transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(67,56,247,0.35); color: #fff;
-  }
-
-  /* ── BOTTOM BAR (when items exist) ── */
-  .wishlist-footer {
-    margin-top: 28px; padding-top: 24px;
-    border-top: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 12px;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.35s both;
-  }
-  .wishlist-footer-note { font-size: 13px; color: var(--muted); }
-  .wishlist-footer-note strong { color: var(--ink); }
-
-  @media (max-width: 600px) {
-    .wish-card { flex-wrap: wrap; }
-    .wish-actions { width: 100%; justify-content: flex-end; }
-    .page-header { flex-direction: column; align-items: flex-start; gap: 14px; }
-  }
+@media(max-width:860px){
+  .nav{height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;gap:8px;}
+  .nav-menu-btn{display:inline-block;}
+  .search-box{order:3;max-width:none;width:100%;}
+  .nav-end{display:none;}
+}
+@media(max-width:560px){
+  .wish-card{flex-wrap:wrap;}
+  .wish-actions{width:100%;justify-content:flex-end;}
+  .page-hdr{flex-direction:column;align-items:flex-start;gap:12px;}
+}
 </style>
 </head>
-
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="brand" href="/">Smart<span>Cart</span></a>
-
-  <form method="GET" action="/" class="search-wrap">
-    <input type="search" name="q" placeholder="Search for products, brands…">
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-logo">S</div>
+    <span class="nav-name">Smart<em>Cart</em></span>
+  </a>
+  <button class="nav-menu-btn" id="menu-btn" type="button">Menu</button>
+  <form method="GET" action="/" class="search-box">
+    <input type="search" name="q" placeholder="Search products, brands…">
     <button type="submit">Search</button>
   </form>
-
-  <div class="nav-actions">
+  <div class="nav-end">
     {% if user.is_authenticated %}
-      <span class="nav-greeting">Hello, <strong>{{ user.username }}</strong></span>
-      <a class="nav-link" href="/users/logout/">Logout</a>
+      <span class="hi">Hello, <strong>{{ user.username }}</strong></span>
+      <a class="nb" href="/users/logout/">Logout</a>
     {% else %}
-      <a class="nav-link accent" href="/users/login/">Login</a>
+      <a class="nb" style="background:var(--brand);color:#fff;" href="/users/login/">Sign In</a>
     {% endif %}
-    <a class="cart-link" href="/cart/"><span>🛒</span> Cart</a>
+    <a class="nb outlined" href="/cart/">🛒 Cart</a>
   </div>
 </nav>
 
-<!-- PAGE -->
 <div class="page">
-
-  <div class="page-header">
-    <div class="header-left">
-      <h1 class="page-title">
-        <span class="heart-icon">♥</span> Wishlist
-      </h1>
-      <p class="page-subtitle">
-        {% if items %}{{ items|length }} saved item{{ items|length|pluralize }}{% else %}Nothing saved yet{% endif %}
-      </p>
+  <div class="page-hdr">
+    <div class="hdr-l">
+      <h1 class="page-title"><span class="heart-ico">♥</span> Wishlist</h1>
+      <p class="page-sub">{% if items %}{{ items|length }} saved item{{ items|length|pluralize }}{% else %}Nothing saved yet{% endif %}</p>
     </div>
-    <a href="/" class="btn-shop">← Browse Products</a>
+    <a href="/" class="btn-browse-sm">← Browse Products</a>
   </div>
 
   {% if items %}
-
   <div class="wishlist">
     {% for item in items %}
     <div class="wish-card">
-
-      <!-- Heart marker -->
       <div class="wish-heart">♥</div>
-
-      <!-- Info -->
       <div class="wish-info">
-        <div class="wish-name">
-          <a href="/product/{{ item.product.id }}/">{{ item.product.name }}</a>
-        </div>
+        <div class="wish-name"><a href="/product/{{ item.product.id }}/">{{ item.product.name }}</a></div>
         <div class="wish-meta">
-          <span class="wish-price">
-            <span class="wish-price-sym">₹</span>{{ item.product.price }}
-          </span>
-          <span class="wish-stock">In Stock</span>
+          <span class="wish-price"><span class="sym">₹</span>{{ item.product.price }}</span>
+          <span class="stock-badge">In Stock</span>
         </div>
       </div>
-
-      <!-- Actions -->
       <div class="wish-actions">
-        <a href="/cart/add/{{ item.product.id }}/" class="btn-add">
-          🛒 Add to Cart
-        </a>
-        {% if item.id %}
-        <a href="/wishlist/remove/{{ item.id }}/" class="btn-remove" title="Remove from wishlist">✕</a>
-        {% endif %}
+        <a href="/cart/add/{{ item.product.id }}/" class="btn-add-cart">🛒 Add to Cart</a>
+        {% if item.id %}<a href="/wishlist/remove/{{ item.id }}/" class="btn-rm" title="Remove">✕</a>{% endif %}
       </div>
-
     </div>
     {% endfor %}
   </div>
-
-  <div class="wishlist-footer">
-    <span class="wishlist-footer-note">
-      <strong>{{ items|length }}</strong> item{{ items|length|pluralize }} saved to your wishlist
-    </span>
-    <a href="/" class="btn-shop">Continue Shopping →</a>
+  <div class="wl-footer">
+    <span class="wl-footer-note"><strong>{{ items|length }}</strong> item{{ items|length|pluralize }} saved</span>
+    <a href="/" class="btn-browse-sm">Continue Shopping →</a>
   </div>
 
   {% else %}
-
   <div class="empty">
-    <div class="empty-icon">🤍</div>
+    <div class="empty-ico">🤍</div>
     <h3>Your wishlist is empty</h3>
     <p>Save items you love and come back to them anytime.</p>
-    <a href="/" class="btn-browse">Explore Products →</a>
+    <a href="/" class="btn-browse-big">Discover products →</a>
   </div>
-
   {% endif %}
-
 </div>
-
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="mobile-drawer" id="mobile-drawer">
+  <a href="/users/dashboard/">Dashboard</a>
+  <a href="/orders/">My Orders</a>
+  <a href="/wishlist/">Wishlist</a>
+  <a href="/cart/">Cart</a>
+  <a href="/users/logout/">Logout</a>
+</aside>
+<script>
+  (function () {
+    var menuBtn = document.getElementById('menu-btn');
+    var drawer = document.getElementById('mobile-drawer');
+    var overlay = document.getElementById('drawer-overlay');
+    function closeDrawer() {
+      drawer.classList.remove('show');
+      overlay.classList.remove('show');
+    }
+    menuBtn.addEventListener('click', function () {
+      drawer.classList.add('show');
+      overlay.classList.add('show');
+    });
+    overlay.addEventListener('click', closeDrawer);
+  })();
+</script>
 </body>
 </html>

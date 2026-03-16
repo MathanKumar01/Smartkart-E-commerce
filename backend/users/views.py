@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 import re
 
 from orders.models import Order
@@ -15,10 +15,12 @@ def dashboard(request):
     user_orders = Order.objects.filter(user=request.user)
     order_count = user_orders.count()
     total_spent = user_orders.aggregate(total=Sum('total_price'))['total'] or 0
+    avg_order_value = user_orders.aggregate(avg=Avg('total_price'))['avg'] or 0
 
     return render(request, 'dashboard.html', {
         'order_count': order_count,
         'total_spent': round(total_spent, 2),
+        'avg_order_value': round(avg_order_value, 2),
     })
 
 def register(request):

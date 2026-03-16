@@ -1,322 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Register</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create Account — SmartCart</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body, body * { font-family: 'Roboto', sans-serif; }
-
-  body { font-weight: 400; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
-  button, [class*="btn-"] { font-weight: 500; }
-
-  :root {
-    --ink: #0d0d14;
-    --indigo: #4338f7;
-    --indigo-light: #6d63ff;
-    --indigo-dim: rgba(67,56,247,0.08);
-    --surface: #ffffff;
-    --bg: #f5f5f8;
-    --muted: #8a8a99;
-    --border: #e8e8ef;
-  }
-
-  body {
-    min-height: 100vh;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 20% 30%, rgba(67,56,247,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 70% at 80% 70%, rgba(67,56,247,0.04) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .card {
-    position: relative; z-index: 1;
-    width: 420px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 48px 44px 40px;
-    box-shadow: 0 8px 48px rgba(13,13,20,0.08), 0 2px 8px rgba(13,13,20,0.04);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── HEADER ── */
-  .header { text-align: center; margin-bottom: 36px; }
-
-  .logo-mark {
-    width: 52px; height: 52px;
-    background: var(--indigo);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 22px; font-weight: 800; color: #fff;
-    letter-spacing: -0.03em;
-    box-shadow: 0 6px 20px rgba(67,56,247,0.3);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both;
-  }
-
-  h1 {
-    font-size: 24px; font-weight: 700;
-    letter-spacing: -0.02em; color: var(--ink);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.12s both;
-  }
-
-  .subtitle {
-    font-size: 13px; color: var(--muted); margin-top: 5px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.16s both;
-  }
-
-  /* ── FIELDS ── */
-  .field {
-    margin-bottom: 18px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  .field:nth-child(1) { animation-delay: 0.20s; }
-  .field:nth-child(2) { animation-delay: 0.26s; }
-  .field:nth-child(3) { animation-delay: 0.32s; }
-
-  label {
-    display: block;
-    font-size: 12px; font-weight: 600;
-    color: var(--ink); margin-bottom: 7px;
-    letter-spacing: -0.01em;
-  }
-
-  input {
-    width: 100%;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-family: inherit;
-    font-size: 14px; font-weight: 400;
-    color: var(--ink); outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  }
-
-  input::placeholder { color: var(--muted); }
-
-  input:focus {
-    border-color: var(--indigo);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(67,56,247,0.1);
-  }
-
-  /* ── BUTTON ── */
-  .btn-register {
-    width: 100%; margin-top: 6px;
-    padding: 13px;
-    background: var(--indigo);
-    border: none; border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px; font-weight: 600;
-    letter-spacing: -0.01em;
-    color: #fff; cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(67,56,247,0.25);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.38s both;
-  }
-
-  .btn-register:hover {
-    background: var(--indigo-light);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 28px rgba(67,56,247,0.35);
-  }
-  .btn-register:active { transform: translateY(0); }
-
-  /* ── DIVIDER ── */
-  .divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 22px 0 16px;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.42s both;
-  }
-  .divider-line { flex: 1; height: 1px; background: var(--border); }
-  .divider span { font-size: 12px; color: var(--muted); }
-
-  /* ── LOGIN LINE ── */
-  .login-line {
-    text-align: center;
-    font-size: 13px; color: var(--muted);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.46s both;
-  }
-  .login-line a {
-    font-weight: 600; color: var(--indigo);
-    text-decoration: none; transition: color 0.18s;
-  }
-  .login-line a:hover { color: var(--indigo-light); }
-
-  /* ── BRAND FOOTER ── */
-  .brand-footer {
-    text-align: center; margin-top: 28px;
-    padding-top: 20px; border-top: 1px solid var(--border);
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;
-  }
-  .brand-name {
-    font-size: 15px; font-weight: 800;
-    letter-spacing: -0.02em; color: var(--ink);
-    text-decoration: none;
-  }
-  .brand-name span { color: var(--indigo); }
-
-  .error-box {
-    margin-bottom: 14px;
-    background: #fff1f2;
-    border: 1px solid #fecdd3;
-    color: #9f1239;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .password-wrap {
-    position: relative;
-  }
-
-  .toggle-pass {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 6px;
-  }
-
-  .toggle-pass:hover {
-    color: var(--indigo);
-    background: var(--indigo-dim);
-  }
-
-  .caps-hint {
-    margin-top: 6px;
-    font-size: 12px;
-    color: #b91c1c;
-    display: none;
-  }
-
-  .password-rules {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#12121a; --brand:#2563eb; --brand-h:#1d4ed8;
+  --brand-dim:rgba(37,99,235,0.09); --surface:#fff; --bg:#f4f5f9; --bg2:#eef0f6;
+  --muted:#7e7e9a; --muted2:#b0b0c8; --border:#e2e4ee; --border2:#ececf4;
+  --red:#dc2626; --red-d:rgba(220,38,38,0.09);
+  --font-d:'Playfair Display',Georgia,serif; --font-b:'Outfit',system-ui,sans-serif;
+  --sb:0 6px 22px rgba(37,99,235,0.28);
+}
+body { min-height:100vh; background:var(--bg); display:flex; align-items:center; justify-content:center; font-family:var(--font-b); padding:24px; -webkit-font-smoothing:antialiased; }
+body::before { content:''; position:fixed; inset:0; z-index:0; background: radial-gradient(ellipse 60% 55% at 15% 25%, rgba(37,99,235,0.07) 0%, transparent 65%), radial-gradient(ellipse 50% 60% at 85% 75%, rgba(37,99,235,0.05) 0%, transparent 65%); pointer-events:none; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
+.wrap { position:relative; z-index:1; width:100%; max-width:440px; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.brand-top { text-align:center; margin-bottom:24px; }
+.brand-ico { width:50px; height:50px; border-radius:15px; background:var(--brand); display:inline-grid; place-items:center; font-family:var(--font-d); font-size:21px; font-weight:700; color:#fff; box-shadow:var(--sb); margin-bottom:10px; }
+.brand-name { font-family:var(--font-d); font-size:24px; font-weight:700; color:var(--ink); }
+.brand-name em { font-style:normal; color:var(--brand); }
+.card { background:var(--surface); border:1px solid var(--border2); border-radius:20px; padding:32px 36px 28px; box-shadow:0 8px 48px rgba(10,10,18,0.09), 0 2px 8px rgba(10,10,18,0.04); }
+.card-hdr { margin-bottom:24px; }
+.card-title { font-family:var(--font-d); font-size:21px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+.card-sub { font-size:13px; color:var(--muted); }
+.err-box { background:var(--red-d); border:1px solid rgba(220,38,38,0.18); border-radius:10px; padding:11px 14px; font-size:13px; color:var(--red); font-weight:500; margin-bottom:16px; }
+.field { margin-bottom:15px; }
+.field-label { display:block; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.pw-wrap { position:relative; }
+.field-input { width:100%; background:var(--bg2); border:1.5px solid var(--border); border-radius:11px; padding:11px 14px; font-family:var(--font-b); font-size:14px; color:var(--ink); outline:none; transition:border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+.field-input::placeholder { color:var(--muted2); }
+.field-input:focus { border-color:var(--brand); background:var(--surface); box-shadow:0 0 0 3px var(--brand-dim); }
+.toggle-pw { position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; padding:6px 8px; border-radius:6px; font-family:var(--font-b); transition:color 0.18s, background 0.18s; }
+.toggle-pw:hover { color:var(--brand); background:var(--brand-dim); }
+.caps-hint { margin-top:5px; font-size:11.5px; color:var(--red); display:none; }
+.pw-rules { margin-top:6px; font-size:11.5px; color:var(--muted2); line-height:1.5; }
+.btn-submit { width:100%; margin-top:6px; padding:13px; background:var(--brand); border:none; border-radius:11px; font-family:var(--font-d); font-size:15px; font-weight:600; letter-spacing:-0.01em; color:#fff; cursor:pointer; transition:background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow:var(--sb); }
+.btn-submit:hover { background:var(--brand-h); transform:translateY(-1px); box-shadow:0 10px 28px rgba(37,99,235,0.38); }
+.divider { display:flex; align-items:center; gap:12px; margin:20px 0 14px; }
+.div-line { flex:1; height:1px; background:var(--border2); }
+.div-txt { font-size:11px; color:var(--muted2); }
+.link-row { text-align:center; font-size:13px; color:var(--muted); }
+.link-row a { color:var(--brand); font-weight:600; text-decoration:none; }
+.link-row a:hover { color:var(--brand-h); }
+.card-footer { text-align:center; margin-top:20px; padding-top:18px; border-top:1px solid var(--border2); }
+.card-footer a { font-family:var(--font-d); font-size:14px; font-weight:700; color:var(--ink); text-decoration:none; }
+.card-footer a em { font-style:normal; color:var(--brand); }
 </style>
 </head>
-
 <body>
+<div class="wrap">
+  <div class="brand-top">
+    <div class="brand-ico">S</div>
+    <div class="brand-name">Smart<em>Cart</em></div>
+  </div>
   <div class="card">
-
-    <div class="header">
-      <div class="logo-mark">S</div>
-      <h1>Create Account</h1>
-      <p class="subtitle">Join SmartCart today</p>
+    <div class="card-hdr">
+      <h1 class="card-title">Create your account</h1>
+      <p class="card-sub">Join thousands of smart shoppers today</p>
     </div>
-
     <form method="POST">
       {% csrf_token %}
-
-      {% if error %}
-        <div class="error-box">{{ error }}</div>
-      {% endif %}
-
+      {% if error %}<div class="err-box">{{ error }}</div>{% endif %}
       <div class="field">
-        <label for="username">Username</label>
-        <input id="username" type="text" name="username"
-          placeholder="Choose a username" autocomplete="username" value="{{ username_value }}">
+        <label class="field-label" for="username">Username</label>
+        <input id="username" class="field-input" type="text" name="username" placeholder="Choose a username" autocomplete="username" value="{{ username_value }}">
       </div>
-
       <div class="field">
-        <label for="email">Email</label>
-        <input id="email" type="email" name="email"
-          placeholder="Enter your email" autocomplete="email" value="{{ email_value }}">
+        <label class="field-label" for="email">Email Address</label>
+        <input id="email" class="field-input" type="email" name="email" placeholder="your@email.com" autocomplete="email" value="{{ email_value }}">
       </div>
-
       <div class="field">
-        <label for="password">Password</label>
-        <div class="password-wrap">
-          <input id="password" type="password" name="password"
-            placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="toggle-pass" data-target="password">Show</button>
+        <label class="field-label" for="password">Password</label>
+        <div class="pw-wrap">
+          <input id="password" class="field-input" type="password" name="password" placeholder="••••••••" autocomplete="new-password" style="padding-right:70px">
+          <button type="button" class="toggle-pw" data-target="password">Show</button>
         </div>
-        <div id="capsHintRegister" class="caps-hint">Caps Lock is ON</div>
-        <div class="password-rules">Use at least 8 characters, 1 uppercase letter, 1 number, and 1 special character.</div>
+        <div id="capsHint" class="caps-hint">⚠ Caps Lock is on</div>
+        <div class="pw-rules">8+ chars · 1 uppercase · 1 number · 1 special character</div>
       </div>
-
-      <button type="submit" class="btn-register">Create Account</button>
+      <button type="submit" class="btn-submit">Create Account →</button>
     </form>
-
-    <div class="divider">
-      <div class="divider-line"></div>
-      <span>or</span>
-      <div class="divider-line"></div>
-    </div>
-
-    <div class="login-line">
-      Already have an account? <a href="/users/login/">Sign In</a>
-    </div>
-
-    <div class="brand-footer">
-      <a href="/" class="brand-name">Smart<span>Cart</span></a>
-    </div>
-
+    <div class="divider"><div class="div-line"></div><span class="div-txt">or</span><div class="div-line"></div></div>
+    <div class="link-row">Already have an account? <a href="/users/login/">Sign In →</a></div>
+    <div class="card-footer"><a href="/">Smart<em>Cart</em></a></div>
   </div>
-
-  <script>
-    (function () {
-      var passwordInput = document.getElementById('password');
-      var capsHint = document.getElementById('capsHintRegister');
-
-      var toggleButtons = document.querySelectorAll('.toggle-pass');
-      toggleButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          var targetId = button.getAttribute('data-target');
-          var input = document.getElementById(targetId);
-          if (!input) {
-            return;
-          }
-          var isPassword = input.getAttribute('type') === 'password';
-          input.setAttribute('type', isPassword ? 'text' : 'password');
-          button.textContent = isPassword ? 'Hide' : 'Show';
-        });
-      });
-
-      if (passwordInput && capsHint) {
-        var updateCapsHint = function (event) {
-          var on = event.getModifierState && event.getModifierState('CapsLock');
-          capsHint.style.display = on ? 'block' : 'none';
-        };
-
-        passwordInput.addEventListener('keydown', updateCapsHint);
-        passwordInput.addEventListener('keyup', updateCapsHint);
-        passwordInput.addEventListener('blur', function () {
-          capsHint.style.display = 'none';
-        });
-      }
-    })();
-  </script>
+</div>
+<script>
+(function(){
+  var pw = document.getElementById('password'), ch = document.getElementById('capsHint');
+  document.querySelectorAll('.toggle-pw').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var inp = document.getElementById(b.dataset.target), isPw = inp.type==='password';
+      inp.type = isPw ? 'text':'password'; b.textContent = isPw ? 'Hide':'Show';
+    });
+  });
+  if(pw && ch) {
+    var fn = function(e) { ch.style.display = (e.getModifierState && e.getModifierState('CapsLock')) ? 'block':'none'; };
+    pw.addEventListener('keydown',fn); pw.addEventListener('keyup',fn);
+    pw.addEventListener('blur', function(){ ch.style.display='none'; });
+  }
+})();
+</script>
 </body>
 </html>

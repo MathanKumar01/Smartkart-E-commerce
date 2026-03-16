@@ -234,6 +234,38 @@
     overflow: hidden;
   }
 
+  .product-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .rating-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #fff6df;
+    color: #8c6200;
+    border: 1px solid #f7df9a;
+    font-weight: 600;
+  }
+
+  .discount-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    font-weight: 600;
+  }
+
   /* ── CARD FOOTER ── */
   .card-footer-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -246,6 +278,14 @@
   .price {
     font-size: 18px; font-weight: 700; color: var(--ink);
     letter-spacing: -0.02em; white-space: nowrap;
+  }
+
+  .old-price {
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-left: 6px;
+    font-weight: 500;
   }
   .price-symbol { font-size: 13px; font-weight: 500; color: var(--muted); }
 
@@ -287,6 +327,49 @@
   }
   .empty-icon { font-size: 48px; margin-bottom: 16px; }
   .empty h3 { font-weight: 700; font-size: 20px; color: var(--ink); margin-bottom: 8px; }
+
+  .pagination {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 36px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--surface);
+    transition: all 0.18s;
+  }
+
+  .page-btn:hover {
+    border-color: var(--indigo);
+    color: var(--indigo);
+    background: var(--indigo-dim);
+  }
+
+  .page-btn.current {
+    background: var(--indigo);
+    color: #fff;
+    border-color: var(--indigo);
+  }
+
+  .page-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
 
   #splash {
     position: fixed;
@@ -540,7 +623,7 @@
       {% endif %}
     </h2>
     <span class="section-count">
-      {% if products %}{{ products|length }} item{{ products|length|pluralize }}{% endif %}
+      {% if page_obj %}{{ page_obj.paginator.count }} item{{ page_obj.paginator.count|pluralize }}{% endif %}
     </span>
   </div>
 
@@ -559,12 +642,21 @@
         <div class="card-body">
           <h3 class="product-name">{{ product.name }}</h3>
           <p class="product-desc">{{ product.description }}</p>
+          <div class="product-meta">
+            <span class="rating-chip">★ {{ product.rating|floatformat:1 }}</span>
+            {% if product.discount_percent > 0 %}
+              <span class="discount-chip">{{ product.discount_percent }}% OFF</span>
+            {% endif %}
+          </div>
         </div>
       </a>
 
       <div class="card-footer-row">
         <div class="price">
           <span class="price-symbol">₹</span>{{ product.price }}
+          {% if product.original_price and product.original_price > product.price %}
+            <span class="old-price">₹{{ product.original_price }}</span>
+          {% endif %}
         </div>
         <div class="footer-actions">
           {% if product.id in cart_products %}
@@ -588,6 +680,22 @@
   </div>
   {% endif %}
 
+  {% if page_obj and page_obj.paginator.num_pages > 1 %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a class="page-btn" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category|urlencode }}{% endif %}">Prev</a>
+    {% endif %}
+
+    <span class="page-label">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    <span class="page-btn current">{{ page_obj.number }}</span>
+
+    {% if page_obj.has_next %}
+      <a class="page-btn" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category|urlencode }}{% endif %}">Next</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
 </div>
 
 <script>
@@ -595,7 +703,7 @@
     setTimeout(function () {
       var splash = document.getElementById('splash');
       if (splash) splash.classList.add('hidden');
-    }, 1500);
+    }, 200);
   });
 </script>
 

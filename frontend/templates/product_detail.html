@@ -189,6 +189,14 @@
     letter-spacing: -0.04em; color: var(--ink);
     line-height: 1;
   }
+
+  .old-price {
+    margin-left: 10px;
+    font-size: 16px;
+    color: var(--muted);
+    text-decoration: line-through;
+    font-weight: 500;
+  }
   .price-tag {
     margin-left: auto;
     font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
@@ -417,11 +425,19 @@
       <div class="price-block">
         <span class="price-sym">₹</span>
         <span class="price-value">{{ product.price }}</span>
+        {% if product.original_price and product.original_price > product.price %}
+          <span class="old-price">₹{{ product.original_price }}</span>
+        {% endif %}
         <span class="price-tag">In Stock</span>
       </div>
 
       <!-- Meta pills -->
       <div class="meta-row">
+        <span class="meta-pill"><span>★</span> {{ product.rating|floatformat:1 }} rating</span>
+        <span class="meta-pill"><span>🗣️</span> {{ product.reviews_count }} reviews</span>
+        {% if product.discount_percent > 0 %}
+          <span class="meta-pill"><span>🏷️</span> {{ product.discount_percent }}% OFF</span>
+        {% endif %}
         <span class="meta-pill"><span>🚚</span> Free Delivery</span>
         <span class="meta-pill"><span>↩️</span> 7-day Returns</span>
         <span class="meta-pill"><span>✅</span> Genuine Product</span>

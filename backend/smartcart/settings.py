@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import socket
 from dotenv import load_dotenv
 import os
 import dj_database_url
@@ -31,10 +32,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-lpk7@=^6iid_!d_fl-fzdv*+tph7q_4szro6we_-$gu)t&@h1)"
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-lpk7@=^6iid_!d_fl-fzdv*+tph7q_4szro6we_-$gu)t&@h1)")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS =  ["*"]
 CSRF_TRUSTED_ORIGINS = [
@@ -61,14 +62,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = "smartcart.urls"
@@ -96,21 +96,37 @@ WSGI_APPLICATION = "smartcart.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL)
+
+def _build_default_database():
+    # In local DEBUG mode, fall back to SQLite when remote DB host cannot be resolved.
+    if DATABASE_URL:
+        parsed = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        host = parsed.get("HOST")
+        try:
+            if host and host not in {"localhost", "127.0.0.1"}:
+                socket.gethostbyname(host)
+            return parsed
+        except socket.gaierror:
+            if DEBUG:
+                print(f"WARNING: Could not resolve database host '{host}'. Using local SQLite in DEBUG.")
+                return {
+                    "ENGINE": "django.db.backends.sqlite3",
+                    "NAME": BASE_DIR / "db.sqlite3",
+                }
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "smartcart_db",
+        "USER": "postgres",
+        "PASSWORD": "selvi@2mathan",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "smartcart_db",
-            "USER": "postgres",
-            "PASSWORD": "selvi@2mathan",
-            "HOST": "localhost",
-            "PORT": "5432",
-        }
-    }
+
+
+DATABASES = {
+    "default": _build_default_database(),
+}
 
 
 # Password validation

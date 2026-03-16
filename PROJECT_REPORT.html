@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartCart – Full Project Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6fb; color: #222; }
+
+    /* ── Cover ── */
+    .cover {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      padding: 80px 60px;
+      min-height: 260px;
+    }
+    .cover h1 { font-size: 2.8rem; letter-spacing: 1px; }
+    .cover .sub { font-size: 1.15rem; margin-top: 12px; color: #a0c4ff; }
+    .cover .meta { margin-top: 30px; font-size: 0.9rem; color: #ccc; }
+    .cover .meta span { margin-right: 30px; }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── TOC ── */
+    .toc { background: #fff; border-radius: 10px; padding: 28px 32px; margin-bottom: 40px;
+           box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .toc h2 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; color: #0f3460; margin-bottom: 14px; }
+    .toc ol { padding-left: 20px; line-height: 2; }
+    .toc a { color: #1a73e8; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── Section cards ── */
+    .section { background: #fff; border-radius: 10px; padding: 32px 36px; margin-bottom: 32px;
+               box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .section h2 { font-size: 1.5rem; color: #0f3460; border-bottom: 3px solid #e8f0fe;
+                  padding-bottom: 10px; margin-bottom: 22px; }
+    .section h3 { font-size: 1.1rem; color: #1a73e8; margin: 22px 0 10px; }
+    .section h4 { font-size: 1rem; color: #333; margin: 16px 0 6px; }
+    .section p  { line-height: 1.8; margin-bottom: 12px; color: #444; }
+    .section ul, .section ol { padding-left: 22px; line-height: 2; color: #444; margin-bottom: 12px; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #1e1e2e; color: #cdd6f4; border-radius: 8px;
+      padding: 18px 20px; overflow-x: auto; font-size: 0.85rem;
+      line-height: 1.6; margin: 12px 0 18px;
+    }
+    code { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+
+    /* ── Error cards ── */
+    .error-card {
+      border-left: 5px solid #e53935; background: #fff8f8;
+      border-radius: 0 8px 8px 0; padding: 18px 22px; margin: 16px 0;
+    }
+    .error-card .err-title { font-weight: 700; color: #c62828; font-size: 1rem; margin-bottom: 6px; }
+    .fix-card {
+      border-left: 5px solid #43a047; background: #f6fff6;
+      border-radius: 0 8px 8px 0; padding: 18px 22px; margin: 16px 0;
+    }
+    .fix-card .fix-title { font-weight: 700; color: #2e7d32; font-size: 1rem; margin-bottom: 6px; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 0.92rem; }
+    th { background: #0f3460; color: #fff; padding: 10px 14px; text-align: left; }
+    td { padding: 9px 14px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+
+    /* ── Badge pills ── */
+    .badge {
+      display: inline-block; border-radius: 20px; padding: 2px 12px;
+      font-size: 0.78rem; font-weight: 600; margin: 2px;
+    }
+    .badge-green  { background: #e8f5e9; color: #2e7d32; }
+    .badge-red    { background: #ffebee; color: #c62828; }
+    .badge-blue   { background: #e3f2fd; color: #1565c0; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+
+    /* ── File path ── */
+    .filepath { font-family: monospace; background: #e8eaf6; color: #283593;
+                border-radius: 4px; padding: 1px 7px; font-size: 0.85rem; }
+
+    /* ── Timeline ── */
+    .timeline { border-left: 3px solid #1a73e8; padding-left: 24px; margin: 16px 0; }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -31px; top: 5px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #1a73e8; border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #1a73e8;
+    }
+    .timeline-item .tl-date { font-size: 0.78rem; color: #888; font-weight: 600; }
+    .timeline-item .tl-text  { margin-top: 3px; color: #333; line-height: 1.7; }
+
+    /* ── Print / save button ── */
+    .print-btn {
+      position: fixed; bottom: 30px; right: 30px;
+      background: #0f3460; color: #fff; border: none; border-radius: 50px;
+      padding: 14px 26px; font-size: 1rem; cursor: pointer; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    }
+    .print-btn:hover { background: #1a73e8; }
+    @media print {
+      .print-btn { display: none; }
+      body { background: #fff; }
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     COVER
+═════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <h1>🛒 SmartCart – E-Commerce Project</h1>
+  <div class="sub">Complete Technical Report: Build, Errors, Fixes &amp; Deployment</div>
+  <div class="meta">
+    <span>📅 March 2026</span>
+    <span>🐍 Django 5.2.5 + PostgreSQL + SQLite</span>
+    <span>☁️ Deployed on Render</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ════ TABLE OF CONTENTS ════ -->
+  <div class="toc">
+    <h2>📋 Table of Contents</h2>
+    <ol>
+      <li><a href="#overview">Project Overview</a></li>
+      <li><a href="#stack">Tech Stack &amp; Architecture</a></li>
+      <li><a href="#phases">Development Phases</a></li>
+      <li><a href="#errors">All Errors Encountered &amp; Fixes</a></li>
+      <li><a href="#models">Database Models (Before &amp; After)</a></li>
+      <li><a href="#import">Data Import Pipeline</a></li>
+      <li><a href="#performance">Performance Optimisations</a></li>
+      <li><a href="#deployment">Deployment Setup &amp; Fixes</a></li>
+      <li><a href="#changed-files">Summary of All Changed Files</a></li>
+      <li><a href="#checklist">Final Deploy Checklist</a></li>
+    </ol>
+  </div>
+
+  <!-- ════ 1. OVERVIEW ════ -->
+  <div class="section" id="overview">
+    <h2>1. Project Overview</h2>
+    <p>
+      <strong>SmartCart</strong> is a full-featured e-commerce web application built with
+      Django. It allows users to browse products (laptops, phones, accessories), add items
+      to a cart or wishlist, place orders, and manage their account. The project is hosted
+      on <strong>Render</strong> with a PostgreSQL database and Cloudinary for media storage.
+    </p>
+    <h3>Apps in the Project</h3>
+    <table>
+      <tr><th>App</th><th>Responsibility</th></tr>
+      <tr><td><code>products</code></td><td>Product catalogue, categories, wishlists, reviews</td></tr>
+      <tr><td><code>cart</code></td><td>Shopping cart (add / remove / update items)</td></tr>
+      <tr><td><code>orders</code></td><td>Order creation and order history</td></tr>
+      <tr><td><code>users</code></td><td>Registration, login, password reset</td></tr>
+    </table>
+    <h3>Folder Structure</h3>
+    <pre><code>smartcart/
+├── backend/                  ← Django project root
+│   ├── manage.py
+│   ├── smartcart/            ← settings, urls, wsgi
+│   ├── products/             ← products app
+│   ├── cart/
+│   ├── orders/
+│   ├── users/
+│   ├── import_products.py    ← CSV importer (main)
+│   ├── import_laptops_phones.py  ← phones/laptops importer
+│   ├── smartkart_products_clean.csv
+│   ├── requirements.txt
+│   └── build.sh              ← Render build script
+├── frontend/
+│   └── templates/            ← HTML templates
+└── Procfile                  ← gunicorn start command</code></pre>
+  </div>
+
+  <!-- ════ 2. TECH STACK ════ -->
+  <div class="section" id="stack">
+    <h2>2. Tech Stack &amp; Architecture</h2>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Backend</td><td>Django 5.2.5 (Python)</td><td>Web framework, ORM, auth</td></tr>
+      <tr><td>Database (prod)</td><td>PostgreSQL on Render</td><td>Persistent data store</td></tr>
+      <tr><td>Database (local)</td><td>SQLite (auto-fallback)</td><td>Local dev when Render DB unreachable</td></tr>
+      <tr><td>Media storage</td><td>Cloudinary</td><td>Product images</td></tr>
+      <tr><td>Static files</td><td>WhiteNoise</td><td>Serve CSS/JS in production</td></tr>
+      <tr><td>Web server</td><td>Gunicorn</td><td>WSGI server on Render</td></tr>
+      <tr><td>Frontend</td><td>Django Templates + CSS</td><td>HTML rendered server-side</td></tr>
+      <tr><td>Environment vars</td><td>python-dotenv</td><td>Local .env file handling</td></tr>
+    </table>
+  </div>
+
+  <!-- ════ 3. PHASES ════ -->
+  <div class="section" id="phases">
+    <h2>3. Development Phases</h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 1 — Model Extension</div>
+        <div class="tl-text">
+          Added <code>rating</code>, <code>original_price</code>, <code>discount_percent</code>,
+          <code>reviews_count</code> fields to the <code>Product</code> model.<br>
+          Created a new <code>ProductReview</code> model linked to Product via ForeignKey.<br>
+          Created and applied migration <code>0005_product_review_fields</code>.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 2 — Data Import</div>
+        <div class="tl-text">
+          Completely rewrote <code>import_products.py</code> to import from
+          <code>smartkart_products_clean.csv</code>.<br>
+          Added retry logic for dropped DB connections, image URL parsing from JSON arrays,
+          and discount calculation from retail vs discounted price.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 3 — Performance Fix</div>
+        <div class="tl-text">
+          Fixed slow page load caused by loading all 1,500+ products at once.<br>
+          Added pagination (24 per page), lightweight <code>.only()</code> query,
+          <code>set()</code> for cart lookups, and reduced splash delay from 1500ms → 200ms.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 4 — Product Detail Fix</div>
+        <div class="tl-text">
+          Product detail page returned a 500 error. Root cause: Render PostgreSQL DNS
+          not resolvable on local network.<br>
+          Added automatic SQLite fallback in <code>settings.py</code> using
+          <code>socket.gethostbyname()</code> DNS check.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 5 — Extra Products Import</div>
+        <div class="tl-text">
+          Created <code>import_laptops_phones.py</code> to import 10 laptops and 10 phones
+          from Flipkart CSVs with real ratings, discounts, and review counts.
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">Phase 6 — Deployment Fixes</div>
+        <div class="tl-text">
+          Fixed 4 production issues: hardcoded <code>SECRET_KEY</code>, hardcoded
+          <code>DEBUG=True</code>, wrong WhiteNoise middleware position,
+          and duplicate SecurityMiddleware. Updated <code>build.sh</code> to use
+          CSV importer instead of old JSON fixture.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ 4. ERRORS ════ -->
+  <div class="section" id="errors">
+    <h2>4. All Errors Encountered &amp; Fixes</h2>
+
+    <!-- ERROR 1 -->
+    <h3>Error 1 — Database Connection Drops During Import</h3>
+    <div class="error-card">
+      <div class="err-title">❌ psycopg2.OperationalError: server closed the connection unexpectedly</div>
+      <p><strong>Where:</strong> <span class="filepath">backend/import_products.py</span> while importing 1,544 products.</p>
+      <p><strong>What it means:</strong> The remote Render PostgreSQL server closed the TCP connection mid-operation.
+        This happens because Render's free-tier PostgreSQL has a connection timeout, and importing thousands of
+        rows takes long enough that idle connections are killed between rows.</p>
+      <p><strong>Why it matters:</strong> Without handling this, any row after the dropped connection would fail
+        silently or crash the import.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Retry Logic with Connection Reset</div>
+      <p>Wrapped every <code>Product.objects.create()</code> in a retry loop. On failure, it calls
+         <code>close_old_connections()</code> (Django utility that discards stale connections and forces
+         a fresh reconnect on the next query), then retries up to 3 times.</p>
+      <pre><code>from django.db import close_old_connections
+from django.db.utils import OperationalError, InterfaceError
+
+def create_product_with_retry(payload, max_retries=3):
+    for attempt in range(1, max_retries + 1):
+        try:
+            Product.objects.create(**payload)
+            return True
+        except (OperationalError, InterfaceError) as exc:
+            close_old_connections()       # reset stale connection
+            if attempt == max_retries:
+                print(f"DB error after {max_retries} retries: {exc}")
+                return False
+            print(f"Retrying (attempt {attempt + 1}/{max_retries})...")</code></pre>
+    </div>
+
+    <!-- ERROR 2 -->
+    <h3>Error 2 — Product Detail Page Returns 500 (Blank Screen)</h3>
+    <div class="error-card">
+      <div class="err-title">❌ psycopg2.OperationalError: could not translate host name "dpg-...render.com" to address — Name or service not known</div>
+      <p><strong>Where:</strong> Any page that hits the database (product detail, dashboard) when running locally.</p>
+      <p><strong>What it means:</strong> The <code>DATABASE_URL</code> environment variable points to a Render-hosted
+         PostgreSQL server. When Django tries to connect to that server from your local machine, Windows DNS
+         cannot resolve the Render subdomain — because it is only accessible from within Render's network.</p>
+      <p><strong>Why it matters:</strong> Every database query fails → blank/error page for every product click.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Automatic SQLite Fallback via DNS Check</div>
+      <p>Added a <code>_build_default_database()</code> function in <span class="filepath">settings.py</span>.
+         It tries <code>socket.gethostbyname(host)</code> before trusting <code>DATABASE_URL</code>.
+         If DNS resolution fails <em>and</em> <code>DEBUG=True</code>, it silently falls back to a local
+         SQLite file — so local development works with zero config changes.</p>
+      <pre><code>import socket
+
+def _build_default_database():
+    if DATABASE_URL:
+        parsed = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        host = parsed.get("HOST")
+        try:
+            if host and host not in {"localhost", "127.0.0.1"}:
+                socket.gethostbyname(host)   # DNS check
+            return parsed                    # DNS OK → use Render DB
+        except socket.gaierror:
+            if DEBUG:
+                print("WARNING: Remote DB unreachable. Using SQLite.")
+                return {
+                    "ENGINE": "django.db.backends.sqlite3",
+                    "NAME": BASE_DIR / "db.sqlite3",
+                }
+    return { ... }   # local PostgreSQL fallback
+
+DATABASES = {"default": _build_default_database()}</code></pre>
+    </div>
+
+    <!-- ERROR 3 -->
+    <h3>Error 3 — Slow Page Load (1500+ Products)</h3>
+    <div class="error-card">
+      <div class="err-title">❌ Products page taking 3–5 seconds to load</div>
+      <p><strong>Where:</strong> <span class="filepath">backend/products/views.py</span></p>
+      <p><strong>What it means:</strong> The original view used <code>Product.objects.all()</code> which
+         loaded all 1,500+ product rows — including large <code>description</code> text fields — into
+         memory at once. The template then rendered every single card. Additionally, the splash screen
+         had a hardcoded 1500ms JavaScript delay.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Pagination + .only() + set() + Reduced Splash</div>
+      <pre><code># views.py — before
+products = Product.objects.all()
+
+# views.py — after
+products = Product.objects.only(
+    "id","name","description","price","original_price",
+    "discount_percent","rating","image_url","category"
+).order_by("id")
+
+cart_products = set(                        # O(1) lookup instead of O(n)
+    Cart.objects.filter(user=request.user)
+    .values_list("product_id", flat=True)
+)
+
+paginator = Paginator(products, 24)         # 24 items per page
+page_obj = paginator.get_page(request.GET.get("page"))</code></pre>
+      <p>Splash screen JS delay reduced from <code>1500</code> → <code>200</code> ms.</p>
+    </div>
+
+    <!-- ERROR 4 -->
+    <h3>Error 4 — WhiteNoise Not Serving Static Files in Production</h3>
+    <div class="error-card">
+      <div class="err-title">❌ CSS / JS files returning 404 after deploy</div>
+      <p><strong>Where:</strong> <span class="filepath">backend/smartcart/settings.py</span> — MIDDLEWARE list</p>
+      <p><strong>What it means:</strong> WhiteNoise must be placed <em>immediately after</em>
+         <code>SecurityMiddleware</code> (position 2). It was placed last in the list, after all other
+         middleware. Django processes middleware top-to-bottom; if WhiteNoise is last, static file
+         requests pass through every other middleware first — and in production some of those middlewares
+         would reject or not handle static paths, returning 404.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Move WhiteNoise to Position 2</div>
+      <pre><code>MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",   # ← must be 2nd
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]</code></pre>
+      <p>Also removed the <strong>duplicate</strong> <code>SecurityMiddleware</code> that had been
+         accidentally added at the bottom.</p>
+    </div>
+
+    <!-- ERROR 5 -->
+    <h3>Error 5 — SECRET_KEY Exposed in Source Code</h3>
+    <div class="error-card">
+      <div class="err-title">❌ Hardcoded SECRET_KEY = "django-insecure-lpk7@..."</div>
+      <p><strong>What it means:</strong> Django's <code>SECRET_KEY</code> signs session cookies, CSRF
+         tokens, and password reset links. If anyone reads your source code (public GitHub repo),
+         they can forge session tokens and impersonate any user — including admins.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Read from Environment Variable</div>
+      <pre><code>SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-fallback-for-local-only")</code></pre>
+      <p>Set a strong random <code>SECRET_KEY</code> in Render's Environment settings before deploying.</p>
+    </div>
+
+    <!-- ERROR 6 -->
+    <h3>Error 6 — DEBUG=True in Production</h3>
+    <div class="error-card">
+      <div class="err-title">❌ DEBUG = True hardcoded</div>
+      <p><strong>What it means:</strong> When <code>DEBUG=True</code> in production, Django shows full
+         stack traces — including file paths, environment variables, and settings values — to anyone
+         who triggers an error. This is a major security risk.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Read from Environment Variable</div>
+      <pre><code>DEBUG = os.getenv("DEBUG", "True") == "True"
+# On Render: set DEBUG=False</code></pre>
+    </div>
+
+    <!-- ERROR 7 -->
+    <h3>Error 7 — build.sh Using Old JSON Fixture (Wrong Schema)</h3>
+    <div class="error-card">
+      <div class="err-title">❌ loaddata backend/data.json fails after new fields added</div>
+      <p><strong>Where:</strong> <span class="filepath">backend/build.sh</span></p>
+      <p><strong>What it means:</strong> The old <code>data.json</code> fixture was created before the
+         model was extended with <code>rating</code>, <code>original_price</code>,
+         <code>discount_percent</code>, and <code>reviews_count</code>. Loading it into the
+         new schema either fails or inserts products with all new fields as null/0.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Replace fixture load with CSV importer</div>
+      <pre><code># build.sh now runs:
+python backend/import_products.py --delete-existing
+
+# Only imports if no products exist (or FORCE_SEED=1 on Render)</code></pre>
+    </div>
+
+    <!-- ERROR 8 -->
+    <h3>Error 8 — Image URLs Not Parsed Correctly from CSV</h3>
+    <div class="error-card">
+      <div class="err-title">❌ Image field contained JSON array strings like ["https://...","https://..."]</div>
+      <p><strong>Where:</strong> <span class="filepath">smartkart_products_clean.csv</span> — <code>image</code> column</p>
+      <p><strong>What it means:</strong> The CSV was generated by a scraper that stored all product images
+         as a JSON-encoded list. Storing the raw string as <code>image_url</code> showed the array literal
+         in <code>&lt;img src&gt;</code> instead of the actual URL.</p>
+    </div>
+    <div class="fix-card">
+      <div class="fix-title">✅ Fix: Parse JSON array and extract first URL</div>
+      <pre><code>import json
+
+raw = str(row.get("image", "")).strip()
+try:
+    urls = json.loads(raw)
+    image_url = urls[0] if isinstance(urls, list) and urls else raw
+except (json.JSONDecodeError, ValueError):
+    image_url = raw.strip("[]'\" ")</code></pre>
+    </div>
+
+  </div><!-- /errors -->
+
+  <!-- ════ 5. MODELS ════ -->
+  <div class="section" id="models">
+    <h2>5. Database Models (Before &amp; After)</h2>
+
+    <h3>Product Model</h3>
+    <table>
+      <tr><th>Field</th><th>Before</th><th>After</th></tr>
+      <tr><td><code>name</code></td><td>CharField(200)</td><td>CharField(200)</td></tr>
+      <tr><td><code>description</code></td><td>TextField</td><td>TextField</td></tr>
+      <tr><td><code>price</code></td><td>FloatField</td><td>FloatField (discounted price)</td></tr>
+      <tr><td><code>original_price</code></td><td class="badge-red">— not existed —</td><td><span class="badge badge-green">NEW</span> FloatField, nullable</td></tr>
+      <tr><td><code>discount_percent</code></td><td class="badge-red">— not existed —</td><td><span class="badge badge-green">NEW</span> PositiveSmallIntegerField, default 0</td></tr>
+      <tr><td><code>rating</code></td><td class="badge-red">— not existed —</td><td><span class="badge badge-green">NEW</span> FloatField, default 0.0</td></tr>
+      <tr><td><code>reviews_count</code></td><td class="badge-red">— not existed —</td><td><span class="badge badge-green">NEW</span> PositiveIntegerField, default 0</td></tr>
+      <tr><td><code>stock</code></td><td>IntegerField</td><td>IntegerField</td></tr>
+      <tr><td><code>image_url</code></td><td>URLField</td><td>URLField</td></tr>
+      <tr><td><code>category</code></td><td>CharField(choices)</td><td>CharField(choices: laptop/phone/accessories)</td></tr>
+    </table>
+
+    <h3>ProductReview Model (New)</h3>
+    <pre><code>class ProductReview(models.Model):
+    product       = ForeignKey(Product, on_delete=CASCADE, related_name='reviews')
+    user          = ForeignKey(User,    on_delete=SET_NULL, null=True, blank=True)
+    reviewer_name = CharField(max_length=120, blank=True)
+    rating        = PositiveSmallIntegerField(validators=[Min(1), Max(5)])
+    comment       = TextField(blank=True)
+    created_at    = DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']</code></pre>
+
+    <h3>Migration History</h3>
+    <table>
+      <tr><th>Migration</th><th>What it does</th></tr>
+      <tr><td>0001_initial</td><td>Creates Product table</td></tr>
+      <tr><td>0002_product_category</td><td>Adds category field</td></tr>
+      <tr><td>0003_wishlist</td><td>Creates Wishlist model</td></tr>
+      <tr><td>0004_remove_product_image</td><td>Removes old image file field</td></tr>
+      <tr><td><strong>0005_product_review_fields</strong></td><td><span class="badge badge-green">NEW</span> Adds rating, original_price, discount_percent, reviews_count; creates ProductReview table</td></tr>
+    </table>
+  </div>
+
+  <!-- ════ 6. IMPORT PIPELINE ════ -->
+  <div class="section" id="import">
+    <h2>6. Data Import Pipeline</h2>
+
+    <h3>Source CSV: smartkart_products_clean.csv</h3>
+    <table>
+      <tr><th>Column</th><th>Maps to</th><th>Notes</th></tr>
+      <tr><td>product_name</td><td>Product.name</td><td>Truncated to 200 chars</td></tr>
+      <tr><td>retail_price</td><td>Product.original_price</td><td>Raw price before discount</td></tr>
+      <tr><td>discounted_price</td><td>Product.price</td><td>Actual selling price</td></tr>
+      <tr><td>description</td><td>Product.description</td><td></td></tr>
+      <tr><td>image</td><td>Product.image_url</td><td>JSON array → first URL extracted</td></tr>
+      <tr><td>brand</td><td>(used in description)</td><td></td></tr>
+      <tr><td>product_rating</td><td>Product.rating</td><td>"No rating available" → 0.0</td></tr>
+      <tr><td>category</td><td>Product.category</td><td>Mapped to laptop/phone/accessories</td></tr>
+    </table>
+
+    <h3>Discount Calculation</h3>
+    <pre><code>discount_percent = int(round(((retail_price - discounted_price) / retail_price) * 100))</code></pre>
+
+    <h3>Import Flags</h3>
+    <table>
+      <tr><th>Flag</th><th>Effect</th></tr>
+      <tr><td><code>--delete-existing</code></td><td>Deletes all products before importing</td></tr>
+      <tr><td><code>--limit N</code></td><td>Import only first N rows</td></tr>
+      <tr><td><code>--csv PATH</code></td><td>Use a different CSV file</td></tr>
+    </table>
+
+    <h3>Flipkart Mobile / Laptop CSV Importer</h3>
+    <p>File: <span class="filepath">backend/import_laptops_phones.py</span> — imports 10 random laptops
+       and 10 random phones from Flipkart CSVs, with real ratings, discounts, and review counts parsed
+       from columns like <code>"58,788 Ratings &amp; 3,425 Reviews"</code>.</p>
+
+    <h3>Final Product Count</h3>
+    <table>
+      <tr><th>Source</th><th>Category</th><th>Count</th></tr>
+      <tr><td>smartkart_products_clean.csv</td><td>Mixed</td><td>1,544</td></tr>
+      <tr><td>flipkart_laptops.csv</td><td>laptop</td><td>10</td></tr>
+      <tr><td>flipkart_mobile_data.csv</td><td>phone</td><td>10</td></tr>
+      <tr><td colspan="2"><strong>Total in DB</strong></td><td><strong>1,564</strong></td></tr>
+    </table>
+  </div>
+
+  <!-- ════ 7. PERFORMANCE ════ -->
+  <div class="section" id="performance">
+    <h2>7. Performance Optimisations</h2>
+    <table>
+      <tr><th>Problem</th><th>Before</th><th>After</th></tr>
+      <tr>
+        <td>Products query</td>
+        <td><code>Product.objects.all()</code><br>loads all 1,564 rows + all fields including large text</td>
+        <td><code>.only("id","name","price",...)</code><br>fetches only 8 lightweight fields</td>
+      </tr>
+      <tr>
+        <td>Page size</td>
+        <td>All 1,564 products on one page</td>
+        <td>24 products per page with Prev/Next navigation</td>
+      </tr>
+      <tr>
+        <td>Cart lookup</td>
+        <td>Python <code>in</code> on a QuerySet (DB hit per check)</td>
+        <td><code>set(values_list(...))</code> — O(1) lookup, single DB query</td>
+      </tr>
+      <tr>
+        <td>Splash screen</td>
+        <td>1,500ms forced delay</td>
+        <td>200ms delay</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ════ 8. DEPLOYMENT ════ -->
+  <div class="section" id="deployment">
+    <h2>8. Deployment Setup &amp; Fixes</h2>
+
+    <h3>Render Configuration</h3>
+    <table>
+      <tr><th>Setting</th><th>Value</th></tr>
+      <tr><td>Build Command</td><td><code>bash backend/build.sh</code></td></tr>
+      <tr><td>Start Command (Procfile)</td><td><code>cd backend &amp;&amp; gunicorn smartcart.wsgi:application</code></td></tr>
+      <tr><td>Python version</td><td>Auto-detected</td></tr>
+    </table>
+
+    <h3>build.sh — What Happens on Every Deploy</h3>
+    <pre><code>#!/usr/bin/env bash
+set -o errexit
+
+pip install -r backend/requirements.txt       # 1. Install deps
+python backend/manage.py migrate              # 2. Apply DB migrations
+python backend/manage.py collectstatic --no-input  # 3. Collect static files
+
+# 4. Seed products only if DB is empty (or FORCE_SEED=1)
+if products already exist:
+    skip (or re-import if FORCE_SEED=1)
+else:
+    python backend/import_products.py         # import 1,544 products</code></pre>
+
+    <h3>Required Environment Variables on Render</h3>
+    <table>
+      <tr><th>Variable</th><th>Value</th><th>Why Required</th></tr>
+      <tr><td><code>SECRET_KEY</code></td><td>Long random string</td><td>Signs sessions/CSRF tokens — must be secret</td></tr>
+      <tr><td><code>DEBUG</code></td><td><code>False</code></td><td>Hides error tracebacks from users</td></tr>
+      <tr><td><code>DATABASE_URL</code></td><td>Render PostgreSQL URL</td><td>Connects to production DB</td></tr>
+      <tr><td><code>CLOUDINARY_CLOUD_NAME</code></td><td>Your Cloudinary name</td><td>Media/image hosting</td></tr>
+      <tr><td><code>CLOUDINARY_API_KEY</code></td><td>From Cloudinary dashboard</td><td>Media uploads</td></tr>
+      <tr><td><code>CLOUDINARY_API_SECRET</code></td><td>From Cloudinary dashboard</td><td>Media uploads (keep secret)</td></tr>
+    </table>
+
+    <h3>Optional Seed Control Variables</h3>
+    <table>
+      <tr><th>Variable</th><th>Effect</th></tr>
+      <tr><td><code>SKIP_SEED=1</code></td><td>Skip CSV import entirely on deploy</td></tr>
+      <tr><td><code>FORCE_SEED=1</code></td><td>Re-import all products even if they exist (delete &amp; re-import)</td></tr>
+    </table>
+  </div>
+
+  <!-- ════ 9. CHANGED FILES ════ -->
+  <div class="section" id="changed-files">
+    <h2>9. Summary of All Changed Files</h2>
+
+    <table>
+      <tr><th>File</th><th>Change Type</th><th>What Changed</th></tr>
+      <tr>
+        <td><span class="filepath">backend/products/models.py</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Added 4 fields to Product; added ProductReview model; fixed duplicate __str__ in Wishlist</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/products/admin.py</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Registered ProductAdmin (with rating/discount in list) and ProductReviewAdmin</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/products/views.py</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Added Paginator (24/page), .only() query optimisation, set() for cart lookup</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/products/migrations/0005_product_review_fields.py</span></td>
+        <td><span class="badge badge-green">Created</span></td>
+        <td>Migration: adds new Product fields, creates ProductReview table</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/import_products.py</span></td>
+        <td><span class="badge badge-orange">Rewritten</span></td>
+        <td>Full rewrite: retry logic, image JSON parsing, discount calc, --delete-existing flag</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/import_laptops_phones.py</span></td>
+        <td><span class="badge badge-green">Created</span></td>
+        <td>New script: imports 10 laptops + 10 phones from Flipkart CSVs with real ratings/discounts</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/smartcart/settings.py</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>SECRET_KEY &amp; DEBUG from env vars; DNS-based SQLite fallback; WhiteNoise middleware fix; removed duplicate SecurityMiddleware</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">backend/build.sh</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Replaced JSON fixture loader with CSV importer; removed broken fixture encoding block</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">frontend/templates/products.html</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Rating chip, discount chip, old-price strikethrough, pagination Prev/Next, splash 200ms</td>
+      </tr>
+      <tr>
+        <td><span class="filepath">frontend/templates/product_detail.html</span></td>
+        <td><span class="badge badge-orange">Modified</span></td>
+        <td>Rating pill, reviews pill, discount pill, original price with strikethrough</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ════ 10. CHECKLIST ════ -->
+  <div class="section" id="checklist">
+    <h2>10. Final Deploy Checklist</h2>
+
+    <h3>Before Pushing to GitHub</h3>
+    <ul>
+      <li>✅ <code>DEBUG = False</code> set via env var on Render</li>
+      <li>✅ <code>SECRET_KEY</code> in Render environment (not in code)</li>
+      <li>✅ <code>smartkart_products_clean.csv</code> is committed to repo (needed by build.sh)</li>
+      <li>✅ Migration <code>0005</code> is committed</li>
+      <li>✅ <code>ALLOWED_HOSTS</code> includes your Render domain</li>
+      <li>✅ <code>CSRF_TRUSTED_ORIGINS</code> includes your Render URL</li>
+    </ul>
+
+    <h3>On Render Dashboard</h3>
+    <ul>
+      <li>✅ Set <code>SECRET_KEY</code> environment variable</li>
+      <li>✅ Set <code>DEBUG=False</code></li>
+      <li>✅ PostgreSQL add-on is attached and <code>DATABASE_URL</code> is set</li>
+      <li>✅ Cloudinary vars set (<code>CLOUDINARY_CLOUD_NAME</code>, <code>CLOUDINARY_API_KEY</code>, <code>CLOUDINARY_API_SECRET</code>)</li>
+      <li>✅ Build command: <code>bash backend/build.sh</code></li>
+      <li>✅ Start command in Procfile: <code>cd backend &amp;&amp; gunicorn smartcart.wsgi:application</code></li>
+    </ul>
+
+    <h3>After First Deploy</h3>
+    <ul>
+      <li>✅ Check deploy logs — should see "Imported products: 1544"</li>
+      <li>✅ Visit site and click a product — detail page should load</li>
+      <li>✅ Register a new user and test cart &amp; orders</li>
+      <li>✅ Check /admin/ with a superuser</li>
+    </ul>
+
+    <div style="margin-top:28px; padding:18px 22px; background:#e8f5e9; border-radius:8px; border-left:5px solid #43a047">
+      <strong style="color:#2e7d32">💡 To re-seed products on Render at any time:</strong><br>
+      Set <code>FORCE_SEED=1</code> in Render environment, trigger a manual deploy, then remove the variable.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<button class="print-btn" onclick="window.print()">🖨️ Save as PDF</button>
+
+</body>
+</html>

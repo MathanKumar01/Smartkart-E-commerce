@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Wishlist
 from cart.models import Cart
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
 
@@ -28,7 +29,17 @@ def product_list(request):
     category = normalize_category(request.GET.get("category"))
     query = request.GET.get("q")
 
-    products = Product.objects.all()
+    products = Product.objects.only(
+        "id",
+        "name",
+        "description",
+        "price",
+        "original_price",
+        "discount_percent",
+        "rating",
+        "image_url",
+        "category",
+    ).order_by("id")
 
     if category:
         if category == "accessories":
@@ -43,14 +54,20 @@ def product_list(request):
             Q(category__icontains=query)
         )
 
-    cart_products = []
+    cart_products = set()
 
     if request.user.is_authenticated:
-        cart_products = Cart.objects.filter(user=request.user)\
-            .values_list("product_id", flat=True)
+        cart_products = set(
+            Cart.objects.filter(user=request.user).values_list("product_id", flat=True)
+        )
+
+    paginator = Paginator(products, 24)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     return render(request, "products.html", {
-        "products": products,
+        "products": page_obj.object_list,
+        "page_obj": page_obj,
         "cart_products": cart_products,
         "selected_category": category,
     })

@@ -1,1 +1,1 @@
-web: cd backend && gunicorn smartcart.wsgi:application
+web: cd backend && gunicorn smartcart.wsgi:application --bind 0.0.0.0:$PORT

@@ -35,7 +35,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-lpk7@=^6iid_!d_fl-fzdv*+tph7q_4szro6we_-$gu)t&@h1)")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOW_SQLITE_FALLBACK = os.getenv("ALLOW_SQLITE_FALLBACK", "True") == "True"
 
 ALLOWED_HOSTS =  ["*"]
 CSRF_TRUSTED_ORIGINS = [
@@ -98,7 +99,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 def _build_default_database():
-    # In local DEBUG mode, fall back to SQLite when remote DB host cannot be resolved.
+    # In local dev, optionally fall back to SQLite when remote DB host cannot be resolved.
     if DATABASE_URL:
         parsed = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
         host = parsed.get("HOST")
@@ -107,12 +108,16 @@ def _build_default_database():
                 socket.gethostbyname(host)
             return parsed
         except socket.gaierror:
-            if DEBUG:
+            if DEBUG and ALLOW_SQLITE_FALLBACK:
                 print(f"WARNING: Could not resolve database host '{host}'. Using local SQLite in DEBUG.")
                 return {
                     "ENGINE": "django.db.backends.sqlite3",
                     "NAME": BASE_DIR / "db.sqlite3",
                 }
+            raise RuntimeError(
+                f"Could not resolve database host '{host}'. "
+                "Check DATABASE_URL or DNS/network configuration."
+            )
 
     return {
         "ENGINE": "django.db.backends.postgresql",

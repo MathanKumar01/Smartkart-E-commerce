@@ -1,6 +1,7 @@
 import os
 import argparse
 import ast
+import re
 import django
 import pandas as pd
 from django.db import close_old_connections
@@ -65,9 +66,24 @@ def parse_image_url(raw_value):
             if isinstance(parsed, list) and parsed:
                 first_url = str(parsed[0]).strip()
                 if first_url:
-                    return first_url
+                    text = first_url
         except (SyntaxError, ValueError):
             pass
+
+    if text.startswith("//"):
+        return f"https:{text}"
+
+    if text.startswith("http://"):
+        text = text.replace("http://", "https://", 1)
+
+    # Older img*.flixcart.com links often return 403 for hotlinking.
+    # rukminim2 serves equivalent image paths and is accessible from browsers.
+    text = re.sub(
+        r"^https://img\d+a?\.flixcart\.com/",
+        "https://rukminim2.flixcart.com/",
+        text,
+        flags=re.IGNORECASE,
+    )
 
     return text
 
